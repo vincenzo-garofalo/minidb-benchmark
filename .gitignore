@@ -1,6 +1,11 @@
 .venv/
 __pycache__/
+.pytest_cache/
 *.py[cod]
 *.egg-info/
 
 rust-minidb/target/
+
+java-minidb/out/
+java-minidb/out-test/
+java-minidb/target/

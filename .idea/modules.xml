@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/minidb-benchmark.iml" filepath="$PROJECT_DIR$/minidb-benchmark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/python-minidb/python-minidb.iml" filepath="$PROJECT_DIR$/python-minidb/python-minidb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rust-minidb/rust-minidb.iml" filepath="$PROJECT_DIR$/rust-minidb/rust-minidb.iml" />
     </modules>
   </component>
 </project>
