@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-minidb"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+[tool.setuptools]
+py-modules = ["command", "db", "main", "response"]
+package-dir = {"" = "src"}
