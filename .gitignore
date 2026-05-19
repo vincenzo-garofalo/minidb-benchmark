@@ -9,3 +9,6 @@ rust-minidb/target/
 java-minidb/out/
 java-minidb/out-test/
 java-minidb/target/
+
+benchmark/out/
+benchmark/results/results.csv

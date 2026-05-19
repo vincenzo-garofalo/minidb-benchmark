@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="GENERAL_MODULE" version="4">
   <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/benchmark/out" />
+    <output-test url="file://$MODULE_DIR$/benchmark/out/test" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/benchmark/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/rust-minidb/target" />
       <excludeFolder url="file://$MODULE_DIR$/java-minidb/out" />
       <excludeFolder url="file://$MODULE_DIR$/java-minidb/out-test" />
+      <excludeFolder url="file://$MODULE_DIR$/benchmark/out" />
     </content>
+    <orderEntry type="jdk" jdkName="21" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
