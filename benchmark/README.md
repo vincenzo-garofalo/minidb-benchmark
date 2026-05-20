@@ -31,13 +31,6 @@ Le metriche principali sono:
 Il throughput indica quante operazioni al secondo riesce a gestire ogni
 implementazione.
 
-Esempio:
-
-```text
-50000 SET/s
-120000 GET/s
-```
-
 La formula principale è:
 
 ```text
@@ -132,10 +125,37 @@ Per eseguirlo:
 java -cp benchmark\out BenchmarkRunner
 ```
 
-Per eseguire solo il workload piccolo con una ripetizione:
+Opzioni disponibili da terminale:
+
+| Opzione | Valore | Default | Descrizione |
+| --- | --- | --- | --- |
+| `--runs` | numero intero | `5` | Numero di ripetizioni per ogni coppia linguaggio/workload. |
+| `--workloads` | nomi file separati da virgola | tutti i `.txt` | Esegue solo i workload indicati, nell'ordine specificato. |
+| `--rss-sample-every` | numero intero | `1000` | Campiona la memoria RSS ogni N comandi. Con `0` disattiva la misura RSS. |
+| `--generate-workloads` | `true`/`false` | `true` | Abilita o disabilita la generazione automatica dei workload mancanti o vuoti. |
+| `--no-generate-workloads` | nessuno | non attivo | Disabilita la generazione automatica dei workload. Equivale a `--generate-workloads false`. |
+| `--generate-only` | nessuno | non attivo | Genera o rigenera i workload standard e termina senza compilare o eseguire benchmark. |
+
+Esempi utili:
 
 ```powershell
-java -cp benchmark\out BenchmarkRunner --workload small_mixed.txt --runs 1
+# Esegue tutti i workload, 5 run ciascuno, con campionamento RSS ogni 1000 comandi
+java -cp benchmark\out BenchmarkRunner
+
+# Esegue un solo workload con 3 ripetizioni
+java -cp benchmark\out BenchmarkRunner --workload medium_write_heavy.txt --runs 3
+
+# Esegue due o piu workload specifici
+java -cp benchmark\out BenchmarkRunner --workloads medium_read_heavy.txt,medium_write_heavy.txt --runs 3
+
+# Esegue i benchmark senza misurare la memoria RSS
+java -cp benchmark\out BenchmarkRunner --runs 3 --rss-sample-every 0
+
+# Usa solo i workload gia presenti, senza generarne di nuovi
+java -cp benchmark\out BenchmarkRunner --no-generate-workloads
+
+# Genera o rigenera i workload standard senza lanciare benchmark
+java -cp benchmark\out BenchmarkRunner --generate-only
 ```
 
 ### `workloads/`
@@ -158,7 +178,11 @@ I workload attualmente previsti sono:
 
 - `small_mixed.txt`: workload piccolo, utile per testare che il runner funzioni;
 - `medium_mixed.txt`: workload intermedio;
-- `large_mixed.txt`: workload piu grande, utile per misure piu stabili.
+- `large_mixed.txt`: workload più grande, utile per misure più stabili.
+- `small_read_heavy.txt`, `medium_read_heavy.txt`, `large_read_heavy.txt`:
+  workload con circa 80% `GET`, 10% `SET`, 10% `EXISTS`;
+- `small_write_heavy.txt`, `medium_write_heavy.txt`, `large_write_heavy.txt`:
+  workload con circa 80% `SET`, 10% `GET`, 10% `EXISTS`.
 
 ### `results/`
 
@@ -181,24 +205,18 @@ rust,small_mixed,1000,1,0.030,33333.33,0.02,0.04,0.09,3.8,6.2
 
 ## Metodo Di Benchmark
 
-Per rendere il confronto sensato, ogni implementazione deve ricevere lo stesso
-identico input.
+Il benchmark confronta le tre implementazioni eseguendo lo stesso file di
+workload su ciascun linguaggio. Ogni implementazione viene avviata come processo
+separato, riceve i comandi tramite `stdin` e restituisce una risposta su
+`stdout`.
 
-Il flusso sarà:
+I workload sono deterministici: a parità di file, Python, Java e Rust ricevono
+la stessa sequenza di comandi nello stesso ordine. Questo rende confrontabili i
+risultati tra linguaggi.
 
-1. preparare un workload;
-2. avviare l'implementazione;
-3. inviare tutti i comandi allo `stdin`;
-4. attendere la fine del processo;
-5. misurare il tempo trascorso;
-6. calcolare i comandi al secondo;
-7. raccogliere le latenze, se abilitate;
-8. raccogliere la memoria RSS, se abilitata;
-9. salvare il risultato;
-10. ripetere il test più volte.
-
-Ripetere i test è importante per ridurre il rumore causato da altri processi del
-sistema operativo, cache, avvio della JVM e variazioni temporanee della macchina.
+Ogni combinazione linguaggio/workload può essere ripetuta più volte tramite
+`--runs`, in modo da ridurre il rumore causato da altri processi del sistema
+operativo, cache, avvio della JVM e variazioni temporanee della macchina.
 
 ## Note Di Interpretazione
 

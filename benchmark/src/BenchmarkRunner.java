@@ -40,7 +40,13 @@ public final class BenchmarkRunner {
     private static final Map<String, Integer> WORKLOAD_SIZES = Map.of(
             "small_mixed.txt", 1_000,
             "medium_mixed.txt", 10_000,
-            "large_mixed.txt", 100_000
+            "large_mixed.txt", 100_000,
+            "small_read_heavy.txt", 1_000,
+            "medium_read_heavy.txt", 10_000,
+            "large_read_heavy.txt", 100_000,
+            "small_write_heavy.txt", 1_000,
+            "medium_write_heavy.txt", 10_000,
+            "large_write_heavy.txt", 100_000
     );
 
     // costruttore di default privato per evitare istanze non necessarie.
@@ -61,7 +67,11 @@ public final class BenchmarkRunner {
 
         // genera workload di esempio solo se richiesto e se i file mancano o sono vuoti.
         if (options.generateWorkloads()) {
-            generateMissingOrEmptyWorkloads();
+            generateMissingOrEmptyWorkloads(options.generateOnly());
+        }
+        if (options.generateOnly()) {
+            System.out.println("Workload generation completed.");
+            return;
         }
 
         // compila le versioni Java e Rust prima di misurarle, così il benchmark usa eseguibili aggiornati.
@@ -75,8 +85,8 @@ public final class BenchmarkRunner {
                 new Implementation("rust", List.of(rustExecutable().toString()), RUST_DIR)
         );
 
-        // carica uno specifico workload se indicato, altrimenti carica tutti i file .txt disponibili.
-        List<Workload> workloads = loadWorkloads(options.workload());
+        // carica i workload specifici se indicati, altrimenti carica tutti i file .txt disponibili.
+        List<Workload> workloads = loadWorkloads(options.workloads());
         if (workloads.isEmpty()) {
             System.err.println("No workloads found. Create files in benchmark/workloads or use --generate-workloads.");
             System.exit(1);
@@ -115,16 +125,27 @@ public final class BenchmarkRunner {
 
     /* METODI */
     /// Crea i workload standard se non esistono ancora o se sono file vuoti.
-    private static void generateMissingOrEmptyWorkloads() throws IOException {
+    private static void generateMissingOrEmptyWorkloads(boolean overwriteExisting) throws IOException {
         for (Map.Entry<String, Integer> entry : WORKLOAD_SIZES.entrySet()) {
             Path path = WORKLOAD_DIR.resolve(entry.getKey());
-            if (Files.exists(path) && Files.size(path) > 0) {
+            if (!overwriteExisting && Files.exists(path) && Files.size(path) > 0) {
                 continue;
             }
-            List<String> commands = generateMixedCommands(entry.getValue());
+            List<String> commands = generateCommands(entry.getKey(), entry.getValue());
             Files.write(path, commands, StandardCharsets.UTF_8);
             System.out.printf("Generated %s with %d commands%n", path, entry.getValue());
         }
+    }
+
+    /// Metodo helper che sceglie il profilo di workload a partire dal nome del file.
+    private static List<String> generateCommands(String fileName, int commandCount) {
+        if (fileName.contains("read_heavy")) {
+            return generateReadHeavyCommands(commandCount);
+        }
+        if (fileName.contains("write_heavy")) {
+            return generateWriteHeavyCommands(commandCount);
+        }
+        return generateMixedCommands(commandCount);
     }
 
     /// Metodo helper che costruisce una lista di comandi misti per simulare operazioni tipiche sul database.
@@ -141,6 +162,46 @@ public final class BenchmarkRunner {
                 case 2 -> commands.add("EXISTS " + key);
                 case 3 -> commands.add("INCR counter");
                 default -> commands.add("SET temp" + index + " " + index);
+            }
+        }
+
+        return commands;
+    }
+
+    /// Metodo helper che costruisce un workload orientato alle letture: circa 80% GET, 10% SET, 10% EXISTS.
+    private static List<String> generateReadHeavyCommands(int commandCount) {
+        List<String> commands = new ArrayList<>(commandCount);
+        int keyCount = Math.max(100, Math.min(commandCount / 10, 10_000));
+
+        for (int index = 0; index < commandCount; index++) {
+            String key = "key" + ((index / 10) % keyCount); // la chiave cambia ogni 10 comandi (prima SET, poi 8 GET sulla stessa chiave, poi EXISTS, poi la chiave cambia)
+            int operation = index % 10; // ogni 10 comandi: 8 GET, 1 SET, 1 EXISTS
+            if (operation == 0) {
+                commands.add("SET " + key + " " + index);
+            } else if (operation == 9) {
+                commands.add("EXISTS " + key);
+            } else {
+                commands.add("GET " + key);
+            }
+        }
+
+        return commands;
+    }
+
+    /// Metodo helper che costruisce un workload orientato alle scritture: circa 80% SET, 10% GET, 10% EXISTS.
+    private static List<String> generateWriteHeavyCommands(int commandCount) {
+        List<String> commands = new ArrayList<>(commandCount);
+        int keyCount = Math.max(100, Math.min(commandCount / 10, 10_000));
+
+        for (int index = 0; index < commandCount; index++) {
+            String key = "key" + (index % keyCount);
+            int operation = index % 10; // ogni 10 comandi: 8 SET, 1 GET, 1 EXISTS
+            if (operation < 8) {
+                commands.add("SET " + key + " " + index);
+            } else if (operation == 8) {
+                commands.add("GET " + key);
+            } else {
+                commands.add("EXISTS " + key);
             }
         }
 
@@ -212,10 +273,12 @@ public final class BenchmarkRunner {
     }
 
     /// Legge i workload da disco e scarta file mancanti, vuoti o righe vuote.
-    private static List<Workload> loadWorkloads(String selectedWorkload) throws IOException {
+    private static List<Workload> loadWorkloads(List<String> selectedWorkloads) throws IOException {
         List<Path> workloadPaths;
-        if (selectedWorkload != null) {
-            workloadPaths = List.of(WORKLOAD_DIR.resolve(selectedWorkload));
+        if (!selectedWorkloads.isEmpty()) {
+            workloadPaths = selectedWorkloads.stream()
+                    .map(WORKLOAD_DIR::resolve)
+                    .toList();
         } else {
             try (Stream<Path> stream = Files.list(WORKLOAD_DIR)) {
                 workloadPaths = stream
@@ -529,11 +592,11 @@ public final class BenchmarkRunner {
 
         System.out.println("Average throughput");
         System.out.printf(Locale.ROOT, "%-14s %-8s %-4s %-12s%n", "workload", "language", "runs", "avg_cmd/s");
-        System.out.println("-".repeat(40));
+        System.out.println("-".repeat(45));
         String previousWorkload = null;
         for (AverageThroughput average : averages) {
             if (previousWorkload != null && !previousWorkload.equals(average.workload())) {
-                System.out.println("-".repeat(40));
+                System.out.println("-".repeat(45));
             }
             System.out.printf(
                     Locale.ROOT,
@@ -590,12 +653,13 @@ public final class BenchmarkRunner {
 
     /* RECORD INTERNI */
     /// Record interno che contiene le opzioni configurabili da riga di comando.
-    private record Options(int runs, String workload, boolean generateWorkloads, int rssSampleEvery) {
+    private record Options(int runs, List<String> workloads, boolean generateWorkloads, boolean generateOnly, int rssSampleEvery) {
         /// Interpreta gli argomenti CLI e applica i valori di default quando un'opzione non viene passata.
         private static Options parse(String[] args) {
             int runs = DEFAULT_RUNS;            // quante volte ripetere ogni benchmark
-            String workload = null;             // quale file workload usare, null se si usano tutti
+            List<String> workloads = new ArrayList<>(); // quali file workload usare, vuota se si usano tutti
             boolean generateWorkloads = true;   // se deve generare automaticamente i file workload mancanti (true), o se deve usare i workload già presenti (false)
+            boolean generateOnly = false;       // se deve solo generare i workload senza lanciare i benchmark (rigenera tutti i workload, anche se esistono già, se abilitato)
             int rssSampleEvery = DEFAULT_RSS_SAMPLE_EVERY;  // ogni quanti comandi misurare la memoria RSS
 
             Map<String, String> values = new HashMap<>();  // mappa per memorizzare i valori degli argomenti
@@ -604,6 +668,11 @@ public final class BenchmarkRunner {
                 String arg = args[index];
                 if ("--no-generate-workloads".equals(arg)) {
                     generateWorkloads = false;
+                    continue;
+                }
+                if ("--generate-only".equals(arg)) {
+                    generateOnly = true;
+                    generateWorkloads = true;
                     continue;
                 }
                 if (!arg.startsWith("--")) {
@@ -619,7 +688,15 @@ public final class BenchmarkRunner {
                 runs = Integer.parseInt(values.get("--runs"));
             }
             if (values.containsKey("--workload")) {
-                workload = values.get("--workload");
+                workloads.add(values.get("--workload"));
+            }
+            if (values.containsKey("--workloads")) {
+                for (String workload : values.get("--workloads").split(",")) {
+                    String trimmed = workload.trim();
+                    if (!trimmed.isEmpty()) {
+                        workloads.add(trimmed);
+                    }
+                }
             }
             if (values.containsKey("--rss-sample-every")) {
                 rssSampleEvery = Integer.parseInt(values.get("--rss-sample-every"));
@@ -628,7 +705,7 @@ public final class BenchmarkRunner {
                 generateWorkloads = Boolean.parseBoolean(values.get("--generate-workloads"));
             }
 
-            return new Options(runs, workload, generateWorkloads, rssSampleEvery);
+            return new Options(runs, workloads, generateWorkloads, generateOnly, rssSampleEvery);
         }
     }
 
