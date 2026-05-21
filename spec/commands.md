@@ -3,14 +3,14 @@
 Questa specifica definisce il comportamento comune che dovrà essere rispettato
 dalle implementazioni in Rust, Python e Java.
 
-MiniDB e un database key-value in memoria ispirato a Redis.
+MiniDB e un database key-value in memoria.
 
 ## Obiettivi
 
 - Mantenere lo stesso comportamento nei tre linguaggi.
 - Rendere i benchmark confrontabili.
 - Separare la logica del database dal protocollo di rete.
-- Partire da un sottoinsieme piccolo ma solido di Redis.
+- Partire da un sottoinsieme piccolo ma solido di operazioni.
 
 ## Modello Dati
 
@@ -21,12 +21,12 @@ key: string
 value: string
 ```
 
-Le chiavi sono univoche. Impostare una chiave gia esistente sovrascrive il
+Le chiavi sono univoche. Impostare una chiave già esistente sovrascrive il
 valore precedente.
 
 ## Formato Dei Comandi
 
-Ogni comando e una riga di testo.
+Ogni comando è una riga di testo.
 
 ```text
 COMMAND arg1 arg2 ...
@@ -35,7 +35,7 @@ COMMAND arg1 arg2 ...
 Regole:
 
 - I comandi non sono case-sensitive: `set`, `SET` e `Set` sono equivalenti.
-- Gli argomenti sono separati da uno o piu spazi.
+- Gli argomenti sono separati da uno o più spazi.
 - Gli spazi iniziali e finali sono ignorati.
 - In questa prima versione i valori non possono contenere spazi.
 - Una riga vuota produce errore.
@@ -185,7 +185,7 @@ Sintassi:
 DEL key
 ```
 
-Risposta se la chiave esisteva ed e stata rimossa:
+Risposta se la chiave esisteva ed è stata rimossa:
 
 ```text
 1
@@ -356,7 +356,7 @@ Queste funzionalita non fanno parte della prima versione, ma potranno essere
 aggiunte dopo che il core sara stabile:
 
 - server TCP;
-- protocollo RESP compatibile con Redis;
+- protocollo RESP;
 - scadenza delle chiavi con `EXPIRE` e `TTL`;
 - liste con `LPUSH`, `RPUSH`, `LPOP`, `RPOP`;
 - persistenza su file;

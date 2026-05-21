@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 /// Runner per il benchmarking (misurazione e confronto delle performance) dei database implementati in Rust, Python, Java.
@@ -25,16 +27,19 @@ public final class BenchmarkRunner {
     private static final Path BENCHMARK_DIR = ROOT_DIR.resolve("benchmark");
     private static final Path WORKLOAD_DIR = BENCHMARK_DIR.resolve("workloads");
     private static final Path RESULTS_DIR = BENCHMARK_DIR.resolve("results");
-    private static final Path RESULTS_FILE = RESULTS_DIR.resolve("results.csv");
+    private static final Path THROUGHPUT_RESULTS_FILE = RESULTS_DIR.resolve("throughput_results.csv");
+    private static final Path MEMORY_RESULTS_FILE = RESULTS_DIR.resolve("memory_results.csv");
 
     private static final Path PYTHON_DIR = ROOT_DIR.resolve("python-minidb").resolve("src");
     private static final Path JAVA_DIR = ROOT_DIR.resolve("java-minidb");
     private static final Path JAVA_CLASSES_DIR = JAVA_DIR.resolve("target").resolve("benchmark-classes");
     private static final Path RUST_DIR = ROOT_DIR.resolve("rust-minidb");
 
-    // valori di default: 5 run per workload, campionamento RSS (Resident Set Size) ogni 1000 comandi.
+    // valori di default: 5 run per workload, campionamento memoria ogni 500 ms nella modalità memory.
     private static final int DEFAULT_RUNS = 5;
-    private static final int DEFAULT_RSS_SAMPLE_EVERY = 1_000;
+    private static final int DEFAULT_MEMORY_SAMPLE_MS = 500;
+    private static final int MEMORY_STARTUP_DELAY_MS = 100; // millisecondi di attesa prima di iniziare il campionamento della memoria
+    private static final int MEMORY_SYNC_SAMPLE_EVERY_COMMANDS = 10_000;    // campionamento sincrono della memoria ogni 10.000 comandi
 
     // mappa nome-file -> numero di comandi da generare per quel workload.
     private static final Map<String, Integer> WORKLOAD_SIZES = Map.of(
@@ -92,8 +97,32 @@ public final class BenchmarkRunner {
             System.exit(1);
         }
 
-        // esegue ogni workload su ogni implementazione per il numero di run configurato.
-        List<BenchmarkResult> results = new ArrayList<>();
+        // esegue il benchmark in modalità memoria, 1 run per ogni workload e implementazione.
+        if (options.mode() == Mode.MEMORY) {
+            List<MemoryResult> memoryResults = new ArrayList<>();
+            for (Workload workload : workloads) {
+                for (Implementation implementation : implementations) {
+                    System.out.printf(
+                            "Measuring memory for %s on %s (%d commands)%n",
+                            implementation.language(),
+                            workload.path().getFileName(),
+                            workload.commands().size()
+                    );
+                    memoryResults.add(runSingleMemoryBenchmark(
+                            implementation,
+                            workload,
+                            DEFAULT_MEMORY_SAMPLE_MS
+                    ));
+                }
+            }
+            printMemoryResultsSummary(memoryResults);
+            writeMemoryResults(memoryResults);
+            System.out.println("Memory results written to " + MEMORY_RESULTS_FILE);
+            return;
+        }
+
+        // esegue il benchmark in modalità throughput (modalità di default), n run per ogni workload e implementazione.
+        List<ThroughputResult> results = new ArrayList<>();
         for (Workload workload : workloads) {
             for (Implementation implementation : implementations) {
                 for (int run = 1; run <= options.runs(); run++) {
@@ -105,20 +134,19 @@ public final class BenchmarkRunner {
                             run,
                             options.runs()
                     );
-                    results.add(runSingleBenchmark(
+                    results.add(runSingleThroughputBenchmark(
                             implementation,
                             workload,
-                            run,
-                            options.rssSampleEvery()
+                            run
                     ));
                 }
             }
         }
 
         // mostra i risultati in forma leggibile e li salva anche nel CSV.
-        printResultsSummary(results);
-        writeResults(results);
-        System.out.println("Results written to " + RESULTS_FILE);
+        printThroughputResultsSummary(results);
+        writeThroughputResults(results);
+        System.out.println("Throughput results written to " + THROUGHPUT_RESULTS_FILE);
     }
 
 
@@ -306,22 +334,17 @@ public final class BenchmarkRunner {
         return workloads;
     }
 
-    /// Avvia una singola implementazione, invia tutti i comandi del workload e misura tempi, throughput e memoria.
-    private static BenchmarkResult runSingleBenchmark(
+    /// Avvia una singola implementazione, invia tutti i comandi del workload e misura tempi, throughput e latenze.
+    private static ThroughputResult runSingleThroughputBenchmark(
             Implementation implementation,
             Workload workload,
-            int run,
-            int rssSampleEvery
+            int run
     ) throws IOException, InterruptedException {
         // avvia il processo esterno per eseguire il benchmark di una specifica implementazione.
         ProcessBuilder builder = new ProcessBuilder(implementation.command());
         builder.directory(implementation.cwd().toFile());
         Process process = builder.start();
 
-        OptionalDouble rssStartMb = rssSampleEvery > 0
-                ? readRssMb(process.pid())
-                : OptionalDouble.empty();   // con 0 la misura RSS viene disattivata
-        OptionalDouble rssPeakMb = rssStartMb;                  // inizializza il picco di memoria osservato
         List<Double> latenciesMs = new ArrayList<>(workload.commands().size()); // misura le latenze dei comandi
 
         // stdin invia comandi al database, stdout riceve una risposta per ogni comando eseguito.
@@ -342,7 +365,6 @@ public final class BenchmarkRunner {
 
                 String response = stdout.readLine();    // legge la risposta dallo standard output del processo del database
                 long operationEndNanos = System.nanoTime();     // tempo appena dopo aver ricevuto la risposta
-
                 if (response == null) { // il processo del database ha terminato prima di ricevere la risposta
                     String stderr = readAll(process.errorReader(StandardCharsets.UTF_8));
                     throw new IllegalStateException(
@@ -352,11 +374,6 @@ public final class BenchmarkRunner {
                 }
 
                 latenciesMs.add((operationEndNanos - operationStartNanos) / 1_000_000.0);   // calcola la latenza del comando in millisecondi (converte da nanosecondi)
-
-                int commandNumber = index + 1;
-                if (rssSampleEvery > 0 && commandNumber % rssSampleEvery == 0) {
-                    rssPeakMb = maxOptional(rssPeakMb, readRssMb(process.pid()));   // aggiorna il picco di memoria osservato durante l'esecuzione
-                }
             }
 
             // chiude in modo ordinato il processo del database.
@@ -375,14 +392,11 @@ public final class BenchmarkRunner {
                 );
             }
 
-            if (rssSampleEvery > 0) {
-                rssPeakMb = maxOptional(rssPeakMb, readRssMb(process.pid()));
-            }
             double timeSeconds = Duration.ofNanos(endNanos - startNanos).toNanos() / 1_000_000_000.0;   // calcola la durata totale del benchmark in secondi
             int commandCount = workload.commands().size();
             double throughput = commandCount / timeSeconds;
 
-            return new BenchmarkResult(
+            return new ThroughputResult(
                     implementation.language(),
                     stripExtension(workload.path().getFileName().toString()),
                     commandCount,
@@ -391,10 +405,98 @@ public final class BenchmarkRunner {
                     throughput,
                     percentile(latenciesMs, 50),
                     percentile(latenciesMs, 95),
-                    percentile(latenciesMs, 99),
-                    rssStartMb,
-                    rssPeakMb
+                    percentile(latenciesMs, 99)
             );
+        }
+    }
+
+    /// Avvia una singola implementazione e misura solo il picco RSS in una run separata dal throughput.
+    private static MemoryResult runSingleMemoryBenchmark(
+            Implementation implementation,
+            Workload workload,
+            int memorySampleMs
+    ) throws IOException, InterruptedException {
+        ProcessBuilder builder = new ProcessBuilder(implementation.command());
+        builder.directory(implementation.cwd().toFile());
+        Process process = builder.start();
+
+        Thread.sleep(MEMORY_STARTUP_DELAY_MS);  // delay per permettere al processo di avviarsi completamente prima di iniziare la misurazione della memoria
+        OptionalDouble rssStartMb = readRssMb(process.pid());
+        AtomicReference<OptionalDouble> rssPeakMb = new AtomicReference<>(rssStartMb);  // variabile condivisa tra thread, per questo Atomic, per memorizzare il picco RSS
+        AtomicBoolean sampling = new AtomicBoolean(true);   // flag condiviso tra thread, per questo Atomic, che dice al thread di campionamento se deve continuare a misurare
+
+        Thread sampler = new Thread(() -> { // thread separato che si occupa di campionare la memoria in background, periodicamente
+            while (sampling.get() && process.isAlive()) {
+                rssPeakMb.updateAndGet(current -> maxOptional(current, readRssMb(process.pid())));  // legge il picco RSS attuale e lo aggiorna se necessario
+                try {
+                    Thread.sleep(memorySampleMs);
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        });
+        sampler.setDaemon(true);    // imposta il thread come daemon, per farlo terminare automaticamente quando il processo principale termina
+        sampler.start();
+
+        try (
+                BufferedWriter stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
+                BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))
+        ) {
+            for (int index = 0; index < workload.commands().size(); index++) {
+                String command = workload.commands().get(index);
+                stdin.write(command);   // scrive il comando nello standard input del processo del database
+                stdin.newLine();        // aggiunge un carattere di terminazione di riga
+                stdin.flush();          // forza l'invio immediato del comando
+
+                String response = stdout.readLine();    // legge la risposta dallo standard output del processo del database
+                if (response == null) {
+                    String stderr = readAll(process.errorReader(StandardCharsets.UTF_8));
+                    throw new IllegalStateException(
+                            implementation.language() + " stopped before completing " + workload.path().getFileName()
+                            + "\nstderr:\n" + stderr
+                    );
+                }
+
+                if ((index + 1) % MEMORY_SYNC_SAMPLE_EVERY_COMMANDS == 0) { // campionamento sincrono ogni MEMORY_SYNC_SAMPLE_EVERY_COMMANDS comandi
+                    rssPeakMb.updateAndGet(current -> maxOptional(current, readRssMb(process.pid())));
+                }
+            }
+
+            rssPeakMb.updateAndGet(current -> maxOptional(current, readRssMb(process.pid())));  // misurazione prima di chiudere il database
+
+            // chiude in modo ordinato il processo del database.
+            stdin.write("EXIT");
+            stdin.newLine();
+            stdin.flush();
+
+            int exitCode = process.waitFor();
+            sampling.set(false);    //dice al thread di campionamento di fermarsi
+            sampler.interrupt();    // interrompe il thread di campionamento, se bloccato
+            sampler.join();         // attende la terminazione del thread di campionamento
+            rssPeakMb.updateAndGet(current -> maxOptional(current, readRssMb(process.pid())));  // ultima misurazione dopo aver chiuso il database
+
+            if (exitCode != 0) {
+                String stderr = readAll(process.errorReader(StandardCharsets.UTF_8));
+                throw new IllegalStateException(
+                        implementation.language() + " exited with code " + exitCode
+                                + "\nstderr:\n" + stderr
+                );
+            }
+
+            return new MemoryResult(
+                    implementation.language(),
+                    stripExtension(workload.path().getFileName().toString()),
+                    workload.commands().size(),
+                    rssStartMb,
+                    rssPeakMb.get()
+            );
+        } finally {
+            sampling.set(false);
+            sampler.interrupt();
+            if (process.isAlive()) {
+                process.destroyForcibly();  // termina il processo del database con un force kill
+            }
         }
     }
 
@@ -503,8 +605,8 @@ public final class BenchmarkRunner {
         return ordered.get(index);
     }
 
-    /// Stampa una vista leggibile dei risultati direttamente sul terminale.
-    private static void printResultsSummary(List<BenchmarkResult> results) {
+    /// Stampa una sintesi leggibile dei risultati di throughput.
+    private static void printThroughputResultsSummary(List<ThroughputResult> results) {
         if (results.isEmpty()) {
             return;
         }
@@ -515,7 +617,7 @@ public final class BenchmarkRunner {
         System.out.println("Benchmark results");
         System.out.printf(
                 Locale.ROOT,
-                "%-8s %-14s %-4s %-9s %-10s %-12s %-9s %-9s %-9s %-12s%n",
+                "%-8s %-18s %-4s %-9s %-10s %-12s %-9s %-9s %-9s%n",
                 "language",
                 "workload",
                 "run",
@@ -524,22 +626,21 @@ public final class BenchmarkRunner {
                 "cmd/s",
                 "p50_ms",
                 "p95_ms",
-                "p99_ms",
-                "rss_peak_mb"
+                "p99_ms"
         );
-        System.out.println("-".repeat(105));
+        System.out.println("-".repeat(95));
 
         String previousWorkload = null;
         String previousLanguage = null;
-        for (BenchmarkResult result : results) {
+        for (ThroughputResult result : results) {
             if (previousWorkload != null && !previousWorkload.equals(result.workload())) {
-                System.out.println("-".repeat(105));
+                System.out.println("-".repeat(95));
             } else if (previousLanguage != null && !previousLanguage.equals(result.language())) {
                 System.out.println();
             }
             System.out.printf(
                     Locale.ROOT,
-                    "%-8s %-14s %-4d %-9d %-10.3f %-12.2f %-9.3f %-9.3f %-9.3f %-12s%n",
+                    "%-8s %-18s %-4d %-9d %-10.2f %-12.0f %-9.4f %-9.4f %-9.4f%n",
                     result.language(),
                     result.workload(),
                     result.run(),
@@ -548,8 +649,7 @@ public final class BenchmarkRunner {
                     result.commandsPerSecond(),
                     result.p50Ms(),
                     result.p95Ms(),
-                    result.p99Ms(),
-                    formatOptionalTableDouble(result.rssPeakMb())
+                    result.p99Ms()
             );
             previousWorkload = result.workload();
             previousLanguage = result.language();
@@ -558,27 +658,27 @@ public final class BenchmarkRunner {
         System.out.println();
         System.out.println();
         System.out.println();
-        printAverageThroughput(results);
+        printAverageThroughputSummary(results);
         System.out.println();
     }
 
     /// Metodo helper che stampa il throughput medio per coppia workload/linguaggio.
-    private static void printAverageThroughput(List<BenchmarkResult> results) {
-        Map<String, List<BenchmarkResult>> groupedResults = new HashMap<>(); // gruppo -> risultati del gruppo
-        for (BenchmarkResult result : results) {
+    private static void printAverageThroughputSummary(List<ThroughputResult> results) {
+        Map<String, List<ThroughputResult>> groupedResults = new HashMap<>(); // gruppo -> risultati del gruppo
+        for (ThroughputResult result : results) {
             String key = result.workload() + "\0" + result.language();
             groupedResults.computeIfAbsent(key, ignored -> new ArrayList<>()).add(result);
         }
 
-        List<AverageThroughput> averages = groupedResults.values()
+        List<AverageThroughputSummary> averages = groupedResults.values()
                 .stream()
                 .map(group -> {
-                    BenchmarkResult first = group.get(0); // solo per recuperare workload e language, comuni a tutti i risultati del gruppo
+                    ThroughputResult first = group.get(0); // solo per recuperare workload e language, comuni a tutti i risultati del gruppo
                     double averageCommandsPerSecond = group.stream()
-                            .mapToDouble(BenchmarkResult::commandsPerSecond)
+                            .mapToDouble(ThroughputResult::commandsPerSecond)
                             .average()
                             .orElse(0.0);
-                    return new AverageThroughput(
+                    return new AverageThroughputSummary(
                             first.workload(),
                             first.language(),
                             group.size(),
@@ -586,21 +686,21 @@ public final class BenchmarkRunner {
                     );
                 })
                 .sorted(Comparator  // ordina prima per nome workload e poi per throughput (comando/s) in ordine decrescente
-                        .comparing(AverageThroughput::workload)
-                        .thenComparing(Comparator.comparingDouble(AverageThroughput::commandsPerSecond).reversed()))
+                        .comparing(AverageThroughputSummary::workload)
+                        .thenComparing(Comparator.comparingDouble(AverageThroughputSummary::commandsPerSecond).reversed()))
                 .toList();
 
         System.out.println("Average throughput");
         System.out.printf(Locale.ROOT, "%-14s %-8s %-4s %-12s%n", "workload", "language", "runs", "avg_cmd/s");
         System.out.println("-".repeat(45));
         String previousWorkload = null;
-        for (AverageThroughput average : averages) {
+        for (AverageThroughputSummary average : averages) {
             if (previousWorkload != null && !previousWorkload.equals(average.workload())) {
                 System.out.println("-".repeat(45));
             }
             System.out.printf(
                     Locale.ROOT,
-                    "%-14s %-8s %-4d %-12.2f%n",
+                    "%-14s %-8s %-4d %-12.0f%n",
                     average.workload(),
                     average.language(),
                     average.runs(),
@@ -610,57 +710,184 @@ public final class BenchmarkRunner {
         }
     }
 
-    /// Scrive tutti i risultati raccolti in un file CSV leggibile da spreadsheet o script.
-    private static void writeResults(List<BenchmarkResult> results) throws IOException {
-        try (BufferedWriter writer = Files.newBufferedWriter(RESULTS_FILE, StandardCharsets.UTF_8)) {
-            writer.write("language,workload,commands,run,time_seconds,commands_per_second,p50_ms,p95_ms,p99_ms,rss_start_mb,rss_peak_mb");
+    /// Scrive i risultati di throughput in un file CSV.
+    private static void writeThroughputResults(List<ThroughputResult> results) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(THROUGHPUT_RESULTS_FILE, StandardCharsets.UTF_8)) {
+            writer.write("language,workload,commands,run,time_seconds,commands_per_second,p50_ms,p95_ms,p99_ms");
             writer.newLine();
-            for (BenchmarkResult result : results) {
+            for (ThroughputResult result : results) {
                 writer.write(String.join(",",
                         result.language(),
                         result.workload(),
                         Integer.toString(result.commands()),
                         Integer.toString(result.run()),
-                        formatDouble(result.timeSeconds()),
-                        formatDouble(result.commandsPerSecond()),
-                        formatDouble(result.p50Ms()),
-                        formatDouble(result.p95Ms()),
-                        formatDouble(result.p99Ms()),
-                        formatOptionalDouble(result.rssStartMb()),
-                        formatOptionalDouble(result.rssPeakMb())
+                        String.format(Locale.ROOT, "%.4f", result.timeSeconds()),
+                        String.format(Locale.ROOT, "%.2f", result.commandsPerSecond()),
+                        String.format(Locale.ROOT, "%.5f", result.p50Ms()),
+                        String.format(Locale.ROOT, "%.5f", result.p95Ms()),
+                        String.format(Locale.ROOT, "%.5f", result.p99Ms())
                 ));
                 writer.newLine();
             }
         }
     }
 
-    /// Metodo helper che formatta i numeri decimali sempre con il punto e con 6 cifre dopo la virgola.
-    private static String formatDouble(double value) {
-        return String.format(Locale.ROOT, "%.6f", value);
+    /// Stampa una sintesi leggibile dei risultati di memoria.
+    private static void printMemoryResultsSummary(List<MemoryResult> results) {
+        if (results.isEmpty()) {
+            return;
+        }
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("Memory results");
+        System.out.printf(
+                Locale.ROOT,
+                "%-8s %-18s %-9s %-12s %-12s%n",
+                "language",
+                "workload",
+                "commands",
+                "rss_start",
+                "rss_peak"
+        );
+        System.out.println("-".repeat(65));
+
+        String previousWorkload = null;
+        String previousLanguage = null;
+        for (MemoryResult result : results) {
+            if (previousWorkload != null && !previousWorkload.equals(result.workload())) {
+                System.out.println("-".repeat(65));
+            } else if (previousLanguage != null && !previousLanguage.equals(result.language())) {
+                System.out.println();
+            }
+            System.out.printf(
+                    Locale.ROOT,
+                    "%-8s %-18s %-9d %-12s %-12s%n",
+                    result.language(),
+                    result.workload(),
+                    result.commands(),
+                    formatOptionalTableDouble(result.rssStartMb()),
+                    formatOptionalTableDouble(result.rssPeakMb())
+            );
+            previousWorkload = result.workload();
+            previousLanguage = result.language();
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        printAverageMemorySummary(results);
+        System.out.println();
     }
 
-    /// Metodo helper che formatta un valore opzionale; se manca, lascia vuota la cella CSV.
-    private static String formatOptionalDouble(OptionalDouble value) {
-        return value.isPresent() ? formatDouble(value.getAsDouble()) : "";
+    /// Metodo helper che stampa la memoria RSS media per coppia workload/linguaggio.
+    private static void printAverageMemorySummary(List<MemoryResult> results) {
+        Map<String, List<MemoryResult>> groupedResults = new HashMap<>();   // gruppo -> risultati del gruppo
+        for (MemoryResult result : results) {
+            String key = result.workload() + "\0" + result.language();
+            groupedResults.computeIfAbsent(key, ignored -> new ArrayList<>()).add(result);
+        }
+
+        List<AverageMemorySummary> averages = groupedResults.values()
+                .stream()
+                .map(group -> {
+                    MemoryResult first = group.get(0);  // solo per recuperare workload e language, comuni a tutti i risultati del gruppo
+                    double averageRssStartMb = averageOptional(group.stream()
+                            .map(MemoryResult::rssStartMb)
+                            .toList());
+                    double averageRssPeakMb = averageOptional(group.stream()
+                            .map(MemoryResult::rssPeakMb)
+                            .toList());
+                    return new AverageMemorySummary(
+                            first.workload(),
+                            first.language(),
+                            group.size(),
+                            averageRssStartMb,
+                            averageRssPeakMb
+                    );
+                })
+                .sorted(Comparator  // ordina prima per nome workload e poi per rssPeakMb in ordine crescente
+                        .comparing(AverageMemorySummary::workload)
+                        .thenComparing(Comparator.comparingDouble(AverageMemorySummary::rssPeakMb)))
+                .toList();
+
+        System.out.println("Average memory");
+        System.out.printf(Locale.ROOT, "%-18s %-8s %-4s %-14s %-14s%n", "workload", "language", "runs", "avg_start_mb", "avg_peak_mb");
+        System.out.println("-".repeat(65));
+        String previousWorkload = null;
+        for (AverageMemorySummary average : averages) {
+            if (previousWorkload != null && !previousWorkload.equals(average.workload())) {
+                System.out.println("-".repeat(65));
+            }
+            System.out.printf(
+                    Locale.ROOT,
+                    "%-18s %-8s %-4d %-14.2f %-14.2f%n",
+                    average.workload(),
+                    average.language(),
+                    average.runs(),
+                    average.rssStartMb(),
+                    average.rssPeakMb()
+            );
+            previousWorkload = average.workload();
+        }
+    }
+
+    /// Scrive i risultati di memoria in un CSV.
+    private static void writeMemoryResults(List<MemoryResult> results) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(MEMORY_RESULTS_FILE, StandardCharsets.UTF_8)) {
+            writer.write("language,workload,commands,rss_start_mb,rss_peak_mb");
+            writer.newLine();
+            for (MemoryResult result : results) {
+                writer.write(String.join(",",
+                        result.language(),
+                        result.workload(),
+                        Integer.toString(result.commands()),
+                        result.rssStartMb().isPresent() ? String.format(Locale.ROOT, "%.2f", result.rssStartMb().getAsDouble()) : "",
+                        result.rssPeakMb().isPresent() ? String.format(Locale.ROOT, "%.2f", result.rssPeakMb().getAsDouble()) : ""
+                ));
+                writer.newLine();
+            }
+        }
     }
 
     /// Metodo helper che formatta un valore opzionale per le tabelle sul terminale.
     private static String formatOptionalTableDouble(OptionalDouble value) {
-        return value.isPresent() ? String.format(Locale.ROOT, "%.3f", value.getAsDouble()) : "-";
+        return value.isPresent() ? String.format(Locale.ROOT, "%.2f", value.getAsDouble()) : "-";
+    }
+
+    /// Metodo helper che calcola la media di valori opzionali, ignorando quelli non disponibili.
+    private static double averageOptional(List<OptionalDouble> values) {
+        return values.stream()
+                .filter(OptionalDouble::isPresent)
+                .mapToDouble(OptionalDouble::getAsDouble)
+                .average()
+                .orElse(0.0);
     }
 
 
 
     /* RECORD INTERNI */
+    /// Enum che rappresenta la modalità di esecuzione del benchmark.
+    private enum Mode {
+        THROUGHPUT, // modalità di default
+        MEMORY
+    }
+
     /// Record interno che contiene le opzioni configurabili da riga di comando.
-    private record Options(int runs, List<String> workloads, boolean generateWorkloads, boolean generateOnly, int rssSampleEvery) {
+    private record Options(
+            int runs,                   // quante volte ripetere ogni benchmark
+            List<String> workloads,     // quali file workload usare, vuota se si usano tutti
+            boolean generateWorkloads,  // se deve generare automaticamente i file workload mancanti (true), o se deve usare i workload già presenti (false)
+            boolean generateOnly,       // se deve solo generare i workload senza lanciare i benchmark (rigenera tutti i workload, anche se esistono già, se abilitato)
+            Mode mode                   // modalità throughput o memory
+    ) {
         /// Interpreta gli argomenti CLI e applica i valori di default quando un'opzione non viene passata.
         private static Options parse(String[] args) {
-            int runs = DEFAULT_RUNS;            // quante volte ripetere ogni benchmark
-            List<String> workloads = new ArrayList<>(); // quali file workload usare, vuota se si usano tutti
-            boolean generateWorkloads = true;   // se deve generare automaticamente i file workload mancanti (true), o se deve usare i workload già presenti (false)
-            boolean generateOnly = false;       // se deve solo generare i workload senza lanciare i benchmark (rigenera tutti i workload, anche se esistono già, se abilitato)
-            int rssSampleEvery = DEFAULT_RSS_SAMPLE_EVERY;  // ogni quanti comandi misurare la memoria RSS
+            int runs = DEFAULT_RUNS;
+            List<String> workloads = new ArrayList<>();
+            boolean generateWorkloads = true;
+            boolean generateOnly = false;
+            Mode mode = Mode.THROUGHPUT;
 
             Map<String, String> values = new HashMap<>();  // mappa per memorizzare i valori degli argomenti
 
@@ -698,14 +925,24 @@ public final class BenchmarkRunner {
                     }
                 }
             }
-            if (values.containsKey("--rss-sample-every")) {
-                rssSampleEvery = Integer.parseInt(values.get("--rss-sample-every"));
+            if (values.containsKey("--mode")) {
+                mode = parseMode(values.get("--mode"));
             }
             if (values.containsKey("--generate-workloads")) {
                 generateWorkloads = Boolean.parseBoolean(values.get("--generate-workloads"));
             }
 
-            return new Options(runs, workloads, generateWorkloads, generateOnly, rssSampleEvery);
+            return new Options(runs, workloads, generateWorkloads, generateOnly, mode);
+        }
+
+        /// Metodo helper che applica la modalità inserita negli argomenti CLI.
+        private static Mode parseMode(String value) {
+            String normalized = value.toLowerCase(Locale.ROOT);
+            return switch (normalized) {
+                case "throughput" -> Mode.THROUGHPUT;
+                case "memory" -> Mode.MEMORY;
+                default -> throw new IllegalArgumentException("Invalid --mode value: " + value);
+            };
         }
     }
 
@@ -718,7 +955,7 @@ public final class BenchmarkRunner {
     }
 
     /// Record interno che rappresenta una riga del CSV finale con tutte le metriche misurate per una singola run.
-    private record BenchmarkResult(
+    private record ThroughputResult(
             String language,            // implementazione testata (rust, python, java, ...)
             String workload,            // nome del workload testato (small, medium, large)
             int commands,               // numero di comandi eseguiti
@@ -727,14 +964,32 @@ public final class BenchmarkRunner {
             double commandsPerSecond,   // throughput misurato, comandi eseguiti al secondo
             double p50Ms,               // latenza media per il 50% dei comandi eseguiti, in millisecondi
             double p95Ms,               // latenza media per il 95% dei comandi eseguiti, in millisecondi
-            double p99Ms,               // latenza media per il 99% dei comandi eseguiti, in millisecondi
-            OptionalDouble rssStartMb,  // memoria RSS prima dell'esecuzione del benchmark, in megabyte
-            OptionalDouble rssPeakMb    // memoria RSS massima durante l'esecuzione del benchmark, in megabyte
+            double p99Ms                // latenza media per il 99% dei comandi eseguiti, in millisecondi
+    ) {
+    }
+
+    /// Record interno che rappresenta una riga del CSV dedicato alla misurazione memoria.
+    private record MemoryResult(
+            String language,
+            String workload,
+            int commands,
+            OptionalDouble rssStartMb,  // memoria RSS all'inizio del benchmark, in megabyte
+            OptionalDouble rssPeakMb    // memoria RSS al momento del peak, in megabyte
+    ) {
+    }
+
+    /// Record interno usato solo per stampare la memoria media.
+    private record AverageMemorySummary(
+            String workload,
+            String language,
+            int runs,
+            double rssStartMb,
+            double rssPeakMb
     ) {
     }
 
     /// Record interno usato solo per stampare il throughput medio.
-    private record AverageThroughput(
+    private record AverageThroughputSummary(
             String workload,
             String language,
             int runs,

@@ -11,4 +11,5 @@ java-minidb/out-test/
 java-minidb/target/
 
 benchmark/out/
-benchmark/results/results.csv
+benchmark/results/memory_results.csv
+benchmark/results/throughput_results.csv

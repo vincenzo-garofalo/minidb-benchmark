@@ -7,24 +7,30 @@ implementazioni di MiniDB:
 - Python: `python-minidb`
 - Rust: `rust-minidb`
 
-L'obiettivo del benchmark è misurare quanto tempo impiega ogni implementazione a
-eseguire la stessa sequenza di comandi MiniDB.
+Il benchmark esegue la stessa sequenza di comandi sulle tre implementazioni e
+produce risultati confrontabili su throughput, latenze e memoria.
 
 ## Cosa Misuriamo
 
-In questa prima fase misuriamo il comportamento end-to-end dei programmi da
-linea di comando.
-
-Questo significa che ogni implementazione viene avviata come processo separato,
-riceve comandi tramite `stdin` e produce risposte su `stdout`.
+Il runner misura il comportamento end-to-end dei programmi da linea di comando.
+Ogni implementazione viene avviata come processo separato, riceve comandi tramite
+`stdin` e produce risposte su `stdout`.
 
 Le metriche principali sono:
 
 - tempo totale di esecuzione;
 - numero di comandi eseguiti;
-- throughput (comandi al secondo);
-- latenza (tempo per una singola operazione);
-- memoria RSS del processo (quanta RAM fisica si occupa).
+- throughput, cioè comandi eseguiti al secondo;
+- latenze `p50`, `p95`, `p99`;
+- memoria RSS (Resident Set Size) del processo, cioè la memoria (RAM) fisica utilizzata.
+
+Il runner separa esplicitamente le misurazioni in due modalità:
+
+- `throughput`: misura tempo, throughput e latenze;
+- `memory`: misura la memoria RSS iniziale e di picco.
+
+Questa separazione evita che il campionamento della memoria alteri i risultati
+di throughput, soprattutto su Windows.
 
 ### Throughput
 
@@ -37,50 +43,37 @@ La formula principale è:
 commands_per_second = numero_comandi / tempo_totale
 ```
 
-Questa è la metrica principale del runner, perché permette di confrontare
-direttamente Python, Java e Rust sullo stesso workload.
+Questa è la metrica principale per confrontare Python, Java e Rust sullo stesso
+workload.
 
 ### Latenza
 
 La latenza indica quanto tempo impiega una singola operazione.
 
-Non basta guardare solo la media: serve osservare la distribuzione dei tempi.
-Le statistiche principali sono:
+Il runner misura la latenza comando per comando e calcola:
 
 - `p50`: mediana, cioè il valore sotto cui cade il 50% delle operazioni;
 - `p95`: valore sotto cui cade il 95% delle operazioni;
 - `p99`: coda lenta, cioè il valore sotto cui cade il 99% delle operazioni.
 
-Il `p99` è importante perché rappresenta le operazioni lente che colpiscono una
-piccola parte delle richieste. In un sistema reale sono spesso quelle più
-visibili agli utenti.
-
-Nel benchmark end-to-end la latenza può essere misurata in due modi:
-
-- misurando ogni singolo comando, con maggiore dettaglio ma più overhead;
-- misurando blocchi di comandi, con meno overhead ma minore precisione.
-
-Il runner misura già la latenza comando per comando. Questa misura include anche
-il costo di `stdin`, `stdout` e del prompt della CLI, quindi va interpretata come
-latenza end-to-end.
+Queste latenze sono end-to-end: includono anche il costo di `stdin`, `stdout` e
+del prompt della CLI.
 
 ### Memoria RSS
 
 La memoria RSS, Resident Set Size, indica quanta RAM fisica occupa il processo.
 
-La misureremo in due momenti:
+In modalità `memory`, il runner misura:
 
-- a riposo, subito dopo l'avvio del processo;
-- sotto carico, durante o dopo l'esecuzione del workload.
+- `rss_start_mb`: memoria osservata poco dopo l'avvio del processo;
+- `rss_peak_mb`: massimo valore RSS osservato durante l'esecuzione del workload.
 
-Su Linux puo essere misurata con strumenti come `ps` o leggendo
-`/proc/<pid>/status`.
+Su Linux/Unix il runner prova prima a leggere `/proc/<pid>/status`, poi usa `ps`
+come alternativa. Su Windows usa PowerShell per leggere `WorkingSet64`.
 
-Su Windows, dove questo progetto viene eseguito attualmente, il runner usa
-PowerShell per leggere il `WorkingSet64` del processo.
-
-La RSS è utile soprattutto nei workload con molti `SET`, perché il database
-mantiene tutte le chiavi in memoria.
+La modalità `memory` è separata dalla modalità `throughput` perché su Windows il
+campionamento RSS tramite PowerShell è relativamente costoso. In questo modo i
+risultati di throughput non vengono distorti dalla misurazione della memoria.
 
 ## Struttura Dei File
 
@@ -88,30 +81,35 @@ mantiene tutte le chiavi in memoria.
 benchmark/
 |-- README.md
 |-- src/
-    `-- BenchmarkRunner.java
+|   `-- BenchmarkRunner.java
 |-- workloads/
 |   |-- small_mixed.txt
 |   |-- medium_mixed.txt
-|   `-- large_mixed.txt
+|   |-- large_mixed.txt
+|   |-- ...
 `-- results/
-    `-- results.csv
+    |-- throughput_results.csv
+    |-- memory_results.csv
+    |-- ...
+    `-- summary.md
 ```
 
-### `BenchmarkRunner.java`
+## BenchmarkRunner
 
-Programma principale del benchmark.
+Il file principale è:
+
+```text
+benchmark/src/BenchmarkRunner.java
+```
 
 Il runner:
 
-- compila le implementazioni;
-- legge i file in `workloads/`;
+- compila le implementazioni Java e Rust;
+- legge i workload da `benchmark/workloads/`;
 - esegue lo stesso workload su Python, Java e Rust;
-- misura il tempo di ogni esecuzione;
-- calcola il throughput;
-- raccoglie la latenza, se abilitata;
-- raccoglie la memoria RSS, se abilitata;
-- ripete ogni test piu volte;
-- salva i risultati in formato CSV dentro `results/`.
+- ripete i test secondo il valore di `--runs` in modalità `throughput`;
+- salva risultati CSV separati per throughput e memoria;
+- genera o rigenera i workload standard quando richiesto.
 
 Per compilare il runner:
 
@@ -119,48 +117,54 @@ Per compilare il runner:
 javac -d benchmark\out benchmark\src\BenchmarkRunner.java
 ```
 
-Per eseguirlo:
+Per eseguirlo con la modalità predefinita:
 
 ```powershell
 java -cp benchmark\out BenchmarkRunner
 ```
 
-Opzioni disponibili da terminale:
+La modalità predefinita è `throughput`.
+
+## Opzioni Da Terminale
 
 | Opzione | Valore | Default | Descrizione |
 | --- | --- | --- | --- |
-| `--runs` | numero intero | `5` | Numero di ripetizioni per ogni coppia linguaggio/workload. |
-| `--workloads` | nomi file separati da virgola | tutti i `.txt` | Esegue solo i workload indicati, nell'ordine specificato. |
-| `--rss-sample-every` | numero intero | `1000` | Campiona la memoria RSS ogni N comandi. Con `0` disattiva la misura RSS. |
+| `--mode` | `throughput` oppure `memory` | `throughput` | Sceglie il tipo di misurazione da eseguire. |
+| `--runs` | numero intero | `5` | Numero di ripetizioni per ogni coppia linguaggio/workload in modalità `throughput`. In modalità `memory` viene eseguita una sola misurazione per workload. |
+| `--workload` | nome file | tutti i `.txt` | Esegue un solo workload specifico. |
+| `--workloads` | nomi file separati da virgola | tutti i `.txt` | Esegue solo i workload indicati. |
 | `--generate-workloads` | `true`/`false` | `true` | Abilita o disabilita la generazione automatica dei workload mancanti o vuoti. |
 | `--no-generate-workloads` | nessuno | non attivo | Disabilita la generazione automatica dei workload. Equivale a `--generate-workloads false`. |
 | `--generate-only` | nessuno | non attivo | Genera o rigenera i workload standard e termina senza compilare o eseguire benchmark. |
 
-Esempi utili:
+### Esempi Utili
 
 ```powershell
-# Esegue tutti i workload, 5 run ciascuno, con campionamento RSS ogni 1000 comandi
+# Esegue tutti i workload in modalità throughput, con 5 run ciascuno
 java -cp benchmark\out BenchmarkRunner
+
+# Usa solo i workload già presenti, senza generarne di nuovi
+java -cp benchmark\out BenchmarkRunner --mode throughput --no-generate-workloads
 
 # Esegue un solo workload con 3 ripetizioni
 java -cp benchmark\out BenchmarkRunner --workload medium_write_heavy.txt --runs 3
 
-# Esegue due o piu workload specifici
+# Esegue due o più workload specifici
 java -cp benchmark\out BenchmarkRunner --workloads medium_read_heavy.txt,medium_write_heavy.txt --runs 3
 
-# Esegue i benchmark senza misurare la memoria RSS
-java -cp benchmark\out BenchmarkRunner --runs 3 --rss-sample-every 0
+# Esegue la misurazione della memoria
+java -cp benchmark\out BenchmarkRunner --mode memory --no-generate-workloads
 
-# Usa solo i workload gia presenti, senza generarne di nuovi
-java -cp benchmark\out BenchmarkRunner --no-generate-workloads
+# Esegue la misurazione della memoria su un solo workload
+java -cp benchmark\out BenchmarkRunner --mode memory --workload large_mixed.txt --no-generate-workloads
 
 # Genera o rigenera i workload standard senza lanciare benchmark
 java -cp benchmark\out BenchmarkRunner --generate-only
 ```
 
-### `workloads/`
+## Workload
 
-Contiene i file di input del benchmark.
+La cartella `benchmark/workloads/` contiene i file di input del benchmark.
 
 Ogni workload è un file di testo con un comando MiniDB per riga.
 
@@ -176,32 +180,59 @@ DEL key1
 
 I workload attualmente previsti sono:
 
-- `small_mixed.txt`: workload piccolo, utile per testare che il runner funzioni;
-- `medium_mixed.txt`: workload intermedio;
-- `large_mixed.txt`: workload più grande, utile per misure più stabili.
+- `small_mixed.txt`: workload misto da 1.000 comandi;
+- `medium_mixed.txt`: workload misto da 10.000 comandi;
+- `large_mixed.txt`: workload misto da 100.000 comandi;
 - `small_read_heavy.txt`, `medium_read_heavy.txt`, `large_read_heavy.txt`:
   workload con circa 80% `GET`, 10% `SET`, 10% `EXISTS`;
 - `small_write_heavy.txt`, `medium_write_heavy.txt`, `large_write_heavy.txt`:
   workload con circa 80% `SET`, 10% `GET`, 10% `EXISTS`.
 
-### `results/`
+I workload sono deterministici: a parità di file, Python, Java e Rust ricevono
+la stessa sequenza di comandi nello stesso ordine.
 
-Contiene i risultati generati dal benchmark.
+## Risultati
 
-Il file principale previsto è:
+La cartella `benchmark/results/` contiene i risultati generati dal runner.
 
-```text
-benchmark/results/results.csv
-```
+I file principali sono:
 
-Esempio di righe attese:
+- `throughput_results.csv`: risultati dell'ultima esecuzione in modalità
+  `throughput`;
+- `memory_results.csv`: risultati dell'ultima esecuzione in modalità `memory`;
+- `throughput_results_example.csv`: snapshot stabile di esempio/documentazione;
+- `memory_results_example.csv`: snapshot stabile di esempio/documentazione;
+- `summary.md`: riepilogo leggibile dei risultati di esempio.
+
+I file `throughput_results.csv` e `memory_results.csv` vengono sovrascritti a
+ogni nuova esecuzione della rispettiva modalità. I file con `_example` nel nome
+sono pensati come snapshot documentali e non dovrebbero essere sovrascritti
+durante le normali esecuzioni.
+
+### Formato Di `throughput_results.csv`
 
 ```csv
-language,workload,commands,run,time_seconds,commands_per_second,p50_ms,p95_ms,p99_ms,rss_start_mb,rss_peak_mb
-python,small_mixed,1000,1,0.120,8333.33,0.08,0.15,0.40,18.5,24.1
-java,small_mixed,1000,1,0.080,12500.00,0.05,0.12,0.30,42.0,58.7
-rust,small_mixed,1000,1,0.030,33333.33,0.02,0.04,0.09,3.8,6.2
+language,workload,commands,run,time_seconds,commands_per_second,p50_ms,p95_ms,p99_ms
+python,small_mixed,1000,1,0.1621,6168.49,0.06350,0.12300,0.15970
 ```
+
+### Formato Di `memory_results.csv`
+
+```csv
+language,workload,commands,rss_start_mb,rss_peak_mb
+python,small_mixed,1000,13.28,13.32
+```
+
+### Summary
+
+Il file `summary.md` presenta i risultati in forma più leggibile.
+
+Nel riepilogo:
+
+- il throughput è ordinato per efficienza decrescente, quindi prima il linguaggio
+  con più comandi al secondo;
+- la memoria è ordinata per efficienza crescente, quindi prima il linguaggio con
+  minore picco RSS.
 
 ## Metodo Di Benchmark
 
@@ -210,17 +241,18 @@ workload su ciascun linguaggio. Ogni implementazione viene avviata come processo
 separato, riceve i comandi tramite `stdin` e restituisce una risposta su
 `stdout`.
 
-I workload sono deterministici: a parità di file, Python, Java e Rust ricevono
-la stessa sequenza di comandi nello stesso ordine. Questo rende confrontabili i
-risultati tra linguaggi.
-
 Ogni combinazione linguaggio/workload può essere ripetuta più volte tramite
-`--runs`, in modo da ridurre il rumore causato da altri processi del sistema
-operativo, cache, avvio della JVM e variazioni temporanee della macchina.
+`--runs` in modalità `throughput`, in modo da ridurre il rumore causato da altri
+processi del sistema operativo, cache, avvio della JVM e variazioni temporanee
+della macchina.
+
+La modalità `memory`, invece, esegue una sola misurazione per workload e
+linguaggio. In questa modalità il runner non misura latenze e throughput, ma si
+concentra sulla memoria RSS.
 
 ## Note Di Interpretazione
 
-I risultati di questa prima fase includono anche il costo di:
+I risultati includono anche il costo di:
 
 - avvio del processo;
 - parsing testuale dei comandi;
@@ -231,18 +263,5 @@ Quindi questo benchmark misura il programma completo, non soltanto la funzione
 interna `execute`.
 
 Su Windows la misura della memoria RSS usa PowerShell per leggere il
-`WorkingSet64` del processo. Questo campionamento può aggiungere overhead,
-soprattutto nei workload grandi, perché il runner avvia un comando PowerShell
-ogni `--rss-sample-every` comandi. Di conseguenza il throughput va interpretato
-come misura end-to-end della CLI completa, non come misura pura del core in
-memoria.
-
-Per confrontare meglio il throughput senza il costo del campionamento memoria si
-può eseguire il runner disattivando la RSS:
-
-```powershell
-java -cp benchmark\out BenchmarkRunner --runs 3 --rss-sample-every 0
-```
-
-In una fase successiva si potrà aggiungere un benchmark più specifico sul core
-del database, misurando direttamente l'esecuzione dei comandi in memoria.
+`WorkingSet64` del processo. Questa misura è adatta alla modalità `memory`, ma
+non viene usata nella modalità `throughput` per evitare overhead sui tempi.
