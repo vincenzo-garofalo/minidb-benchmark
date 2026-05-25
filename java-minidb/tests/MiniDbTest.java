@@ -12,6 +12,8 @@ final class MiniDbTest {
         assertEquals(Command.del("user"), Command.parse("DEL user"));
         assertEquals(Command.exists("user"), Command.parse("EXISTS user"));
         assertEquals(Command.incr("counter"), Command.parse("INCR counter"));
+        assertEquals(Command.expire("session", 30), Command.parse("EXPIRE session 30"));
+        assertEquals(Command.ttl("session"), Command.parse("TTL session"));
         assertEquals(Command.ping(), Command.parse("ping"));
         assertEquals(Command.set("user", "Mario"), Command.parse("  SET   user   Mario  "));
     }
@@ -29,6 +31,12 @@ final class MiniDbTest {
                 () -> Command.parse("GET")
         );
         assertEquals("wrong number of arguments for GET", wrongArguments.getMessage());
+
+        IllegalArgumentException invalidExpireSeconds = assertThrows(
+                IllegalArgumentException.class,
+                () -> Command.parse("EXPIRE user soon")
+        );
+        assertEquals("invalid expire seconds", invalidExpireSeconds.getMessage());
 
         IllegalArgumentException unknownCommand = assertThrows(
                 IllegalArgumentException.class,
@@ -60,5 +68,14 @@ final class MiniDbTest {
         assertEquals("2", db.execute(Command.parse("INCR counter")).toText());
         assertEquals("OK", db.execute(Command.parse("SET name mario")).toText());
         assertEquals("ERR value is not an integer", db.execute(Command.parse("INCR name")).toText());
+        assertEquals("-2", db.execute(Command.parse("TTL session")).toText());
+        assertEquals("OK", db.execute(Command.parse("SET session open")).toText());
+        assertEquals("-1", db.execute(Command.parse("TTL session")).toText());
+        assertEquals("1", db.execute(Command.parse("EXPIRE session 0")).toText());
+        assertEquals("NOT_FOUND", db.execute(Command.parse("GET session")).toText());
+        assertEquals("OK", db.execute(Command.parse("SET session renewed")).toText());
+        assertEquals("1", db.execute(Command.parse("EXPIRE session 30")).toText());
+        assertEquals("OK", db.execute(Command.parse("SET session persistent")).toText());
+        assertEquals("-1", db.execute(Command.parse("TTL session")).toText());
     }
 }

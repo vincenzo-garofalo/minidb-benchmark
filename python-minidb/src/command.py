@@ -8,6 +8,7 @@ class Command:
     name: str
     key: str | None = None
     value: str | None = None
+    seconds: int | None = None
 
     @staticmethod
     def parse(input_line: str) -> "Command":
@@ -48,5 +49,19 @@ class Command:
             if len(parts) != 2:
                 raise ValueError("wrong number of arguments for INCR")
             return Command("INCR", key=parts[1])
+
+        if command_name == "EXPIRE":    # imposta una scadenza in secondi
+            if len(parts) != 3:
+                raise ValueError("wrong number of arguments for EXPIRE")
+            try:
+                seconds = int(parts[2])
+            except ValueError as error:
+                raise ValueError("invalid expire seconds") from error
+            return Command("EXPIRE", key=parts[1], seconds=seconds)
+
+        if command_name == "TTL":       # restituisce i secondi rimanenti prima della scadenza
+            if len(parts) != 2:
+                raise ValueError("wrong number of arguments for TTL")
+            return Command("TTL", key=parts[1])
 
         raise ValueError(f"unknown command {command_name}")

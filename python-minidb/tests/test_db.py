@@ -57,5 +57,27 @@ class MiniDbTests(unittest.TestCase):
             Response.error("value is not an integer"),
         )
 
+    def test_expires_existing_key(self):
+        db = MiniDb()
+        db.execute(Command("SET", key="session", value="open"))
+        self.assertEqual(
+            db.execute(Command("EXPIRE", key="session", seconds=0)),
+            Response.integer(1),
+        )
+        self.assertEqual(db.execute(Command("GET", key="session")), Response.not_found())
+
+    def test_returns_ttl_status_codes(self):
+        db = MiniDb()
+        self.assertEqual(db.execute(Command("TTL", key="missing")), Response.integer(-2))
+        db.execute(Command("SET", key="session", value="open"))
+        self.assertEqual(db.execute(Command("TTL", key="session")), Response.integer(-1))
+
+    def test_set_clears_existing_ttl(self):
+        db = MiniDb()
+        db.execute(Command("SET", key="session", value="open"))
+        db.execute(Command("EXPIRE", key="session", seconds=30))
+        db.execute(Command("SET", key="session", value="renewed"))
+        self.assertEqual(db.execute(Command("TTL", key="session")), Response.integer(-1))
+
 if __name__ == "__main__":
     unittest.main()

@@ -25,6 +25,15 @@ class CommandTests(unittest.TestCase):
     def test_parses_incr_command(self):
         self.assertEqual(Command.parse("INCR counter"), Command("INCR", key="counter"))
 
+    def test_parses_expire_command(self):
+        self.assertEqual(
+            Command.parse("EXPIRE session 30"),
+            Command("EXPIRE", key="session", seconds=30),
+        )
+
+    def test_parses_ttl_command(self):
+        self.assertEqual(Command.parse("TTL session"), Command("TTL", key="session"))
+
     def test_parses_commands_case_insensitively(self):
         self.assertEqual(Command.parse("ping"), Command("PING"))
 
@@ -41,6 +50,10 @@ class CommandTests(unittest.TestCase):
     def test_rejects_wrong_argument_count(self):
         with self.assertRaisesRegex(ValueError, "wrong number of arguments for GET"):
             Command.parse("GET")
+
+    def test_rejects_invalid_expire_seconds(self):
+        with self.assertRaisesRegex(ValueError, "invalid expire seconds"):
+            Command.parse("EXPIRE user soon")
 
     def test_rejects_unknown_command(self):
         with self.assertRaisesRegex(ValueError, "unknown command UNKNOWN"):

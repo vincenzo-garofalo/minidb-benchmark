@@ -205,12 +205,14 @@ public final class BenchmarkRunner {
 
         for (int index = 0; index < commandCount; index++) {
             String key = "key" + (index % keyCount);
-            int operation = index % 5;
-            switch (operation) { // 5 possibili comandi: SET, GET, EXISTS, INCR, SET temp
+            int operation = index % 7;
+            switch (operation) { // 7 possibili comandi: SET, GET, EXISTS, INCR, EXPIRE, TTL, SET temp
                 case 0 -> commands.add("SET " + key + " " + index);
                 case 1 -> commands.add("GET " + key);
                 case 2 -> commands.add("EXISTS " + key);
                 case 3 -> commands.add("INCR counter");
+                case 4 -> commands.add("EXPIRE " + key + " 60");
+                case 5 -> commands.add("TTL " + key);
                 default -> commands.add("SET temp" + index + " " + index);
             }
         }
@@ -218,16 +220,20 @@ public final class BenchmarkRunner {
         return commands;
     }
 
-    /// Metodo helper che costruisce un workload orientato alle letture: circa 80% GET, 10% SET, 10% EXISTS.
+    /// Metodo helper che costruisce un workload orientato alle letture: GET prevalente, con SET, EXISTS, EXPIRE e TTL.
     private static List<String> generateReadHeavyCommands(int commandCount) {
         List<String> commands = new ArrayList<>(commandCount);
         int keyCount = Math.max(100, Math.min(commandCount / 10, 10_000));
 
         for (int index = 0; index < commandCount; index++) {
-            String key = "key" + ((index / 10) % keyCount); // la chiave cambia ogni 10 comandi (prima SET, poi 8 GET sulla stessa chiave, poi EXISTS, poi la chiave cambia)
-            int operation = index % 10; // ogni 10 comandi: 8 GET, 1 SET, 1 EXISTS
+            String key = "key" + ((index / 10) % keyCount); // la chiave cambia ogni 10 comandi
+            int operation = index % 10; // ogni 10 comandi: 6 GET, 1 SET, 1 EXPIRE, 1 TTL, 1 EXISTS
             if (operation == 0) {
                 commands.add("SET " + key + " " + index);
+            } else if (operation == 1) {
+                commands.add("EXPIRE " + key + " 60");
+            } else if (operation == 8) {
+                commands.add("TTL " + key);
             } else if (operation == 9) {
                 commands.add("EXISTS " + key);
             } else {
@@ -238,17 +244,21 @@ public final class BenchmarkRunner {
         return commands;
     }
 
-    /// Metodo helper che costruisce un workload orientato alle scritture: circa 80% SET, 10% GET, 10% EXISTS.
+    /// Metodo helper che costruisce un workload orientato alle scritture: SET prevalente, con GET, EXISTS, EXPIRE e TTL.
     private static List<String> generateWriteHeavyCommands(int commandCount) {
         List<String> commands = new ArrayList<>(commandCount);
         int keyCount = Math.max(100, Math.min(commandCount / 10, 10_000));
 
         for (int index = 0; index < commandCount; index++) {
             String key = "key" + (index % keyCount);
-            int operation = index % 10; // ogni 10 comandi: 8 SET, 1 GET, 1 EXISTS
+            int operation = index % 12; // ogni 12 comandi: 8 SET, 1 EXPIRE, 1 TTL, 1 GET, 1 EXISTS
             if (operation < 8) {
                 commands.add("SET " + key + " " + index);
             } else if (operation == 8) {
+                commands.add("EXPIRE " + key + " 60");
+            } else if (operation == 9) {
+                commands.add("TTL " + key);
+            } else if (operation == 10) {
                 commands.add("GET " + key);
             } else {
                 commands.add("EXISTS " + key);

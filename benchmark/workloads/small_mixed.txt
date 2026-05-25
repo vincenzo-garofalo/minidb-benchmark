@@ -2,999 +2,999 @@ SET key0 0
 GET key1
 EXISTS key2
 INCR counter
-SET temp4 4
-SET key5 5
-GET key6
-EXISTS key7
+EXPIRE key4 60
+TTL key5
+SET temp6 6
+SET key7 7
+GET key8
+EXISTS key9
 INCR counter
-SET temp9 9
-SET key10 10
-GET key11
-EXISTS key12
+EXPIRE key11 60
+TTL key12
+SET temp13 13
+SET key14 14
+GET key15
+EXISTS key16
 INCR counter
-SET temp14 14
-SET key15 15
-GET key16
-EXISTS key17
+EXPIRE key18 60
+TTL key19
+SET temp20 20
+SET key21 21
+GET key22
+EXISTS key23
 INCR counter
-SET temp19 19
-SET key20 20
-GET key21
-EXISTS key22
+EXPIRE key25 60
+TTL key26
+SET temp27 27
+SET key28 28
+GET key29
+EXISTS key30
 INCR counter
-SET temp24 24
-SET key25 25
-GET key26
-EXISTS key27
-INCR counter
-SET temp29 29
-SET key30 30
-GET key31
-EXISTS key32
-INCR counter
+EXPIRE key32 60
+TTL key33
 SET temp34 34
 SET key35 35
 GET key36
 EXISTS key37
 INCR counter
-SET temp39 39
-SET key40 40
-GET key41
-EXISTS key42
+EXPIRE key39 60
+TTL key40
+SET temp41 41
+SET key42 42
+GET key43
+EXISTS key44
 INCR counter
-SET temp44 44
-SET key45 45
-GET key46
-EXISTS key47
+EXPIRE key46 60
+TTL key47
+SET temp48 48
+SET key49 49
+GET key50
+EXISTS key51
 INCR counter
-SET temp49 49
-SET key50 50
-GET key51
-EXISTS key52
+EXPIRE key53 60
+TTL key54
+SET temp55 55
+SET key56 56
+GET key57
+EXISTS key58
 INCR counter
-SET temp54 54
-SET key55 55
-GET key56
-EXISTS key57
+EXPIRE key60 60
+TTL key61
+SET temp62 62
+SET key63 63
+GET key64
+EXISTS key65
 INCR counter
-SET temp59 59
-SET key60 60
-GET key61
-EXISTS key62
-INCR counter
-SET temp64 64
-SET key65 65
-GET key66
-EXISTS key67
-INCR counter
+EXPIRE key67 60
+TTL key68
 SET temp69 69
 SET key70 70
 GET key71
 EXISTS key72
 INCR counter
-SET temp74 74
-SET key75 75
-GET key76
-EXISTS key77
+EXPIRE key74 60
+TTL key75
+SET temp76 76
+SET key77 77
+GET key78
+EXISTS key79
 INCR counter
-SET temp79 79
-SET key80 80
-GET key81
-EXISTS key82
+EXPIRE key81 60
+TTL key82
+SET temp83 83
+SET key84 84
+GET key85
+EXISTS key86
 INCR counter
-SET temp84 84
-SET key85 85
-GET key86
-EXISTS key87
+EXPIRE key88 60
+TTL key89
+SET temp90 90
+SET key91 91
+GET key92
+EXISTS key93
 INCR counter
-SET temp89 89
-SET key90 90
-GET key91
-EXISTS key92
+EXPIRE key95 60
+TTL key96
+SET temp97 97
+SET key98 98
+GET key99
+EXISTS key0
 INCR counter
-SET temp94 94
-SET key95 95
-GET key96
-EXISTS key97
-INCR counter
-SET temp99 99
-SET key0 100
-GET key1
-EXISTS key2
-INCR counter
+EXPIRE key2 60
+TTL key3
 SET temp104 104
 SET key5 105
 GET key6
 EXISTS key7
 INCR counter
-SET temp109 109
-SET key10 110
-GET key11
-EXISTS key12
+EXPIRE key9 60
+TTL key10
+SET temp111 111
+SET key12 112
+GET key13
+EXISTS key14
 INCR counter
-SET temp114 114
-SET key15 115
-GET key16
-EXISTS key17
+EXPIRE key16 60
+TTL key17
+SET temp118 118
+SET key19 119
+GET key20
+EXISTS key21
 INCR counter
-SET temp119 119
-SET key20 120
-GET key21
-EXISTS key22
+EXPIRE key23 60
+TTL key24
+SET temp125 125
+SET key26 126
+GET key27
+EXISTS key28
 INCR counter
-SET temp124 124
-SET key25 125
-GET key26
-EXISTS key27
+EXPIRE key30 60
+TTL key31
+SET temp132 132
+SET key33 133
+GET key34
+EXISTS key35
 INCR counter
-SET temp129 129
-SET key30 130
-GET key31
-EXISTS key32
-INCR counter
-SET temp134 134
-SET key35 135
-GET key36
-EXISTS key37
-INCR counter
+EXPIRE key37 60
+TTL key38
 SET temp139 139
 SET key40 140
 GET key41
 EXISTS key42
 INCR counter
-SET temp144 144
-SET key45 145
-GET key46
-EXISTS key47
+EXPIRE key44 60
+TTL key45
+SET temp146 146
+SET key47 147
+GET key48
+EXISTS key49
 INCR counter
-SET temp149 149
-SET key50 150
-GET key51
-EXISTS key52
+EXPIRE key51 60
+TTL key52
+SET temp153 153
+SET key54 154
+GET key55
+EXISTS key56
 INCR counter
-SET temp154 154
-SET key55 155
-GET key56
-EXISTS key57
+EXPIRE key58 60
+TTL key59
+SET temp160 160
+SET key61 161
+GET key62
+EXISTS key63
 INCR counter
-SET temp159 159
-SET key60 160
-GET key61
-EXISTS key62
+EXPIRE key65 60
+TTL key66
+SET temp167 167
+SET key68 168
+GET key69
+EXISTS key70
 INCR counter
-SET temp164 164
-SET key65 165
-GET key66
-EXISTS key67
-INCR counter
-SET temp169 169
-SET key70 170
-GET key71
-EXISTS key72
-INCR counter
+EXPIRE key72 60
+TTL key73
 SET temp174 174
 SET key75 175
 GET key76
 EXISTS key77
 INCR counter
-SET temp179 179
-SET key80 180
-GET key81
-EXISTS key82
+EXPIRE key79 60
+TTL key80
+SET temp181 181
+SET key82 182
+GET key83
+EXISTS key84
 INCR counter
-SET temp184 184
-SET key85 185
-GET key86
-EXISTS key87
+EXPIRE key86 60
+TTL key87
+SET temp188 188
+SET key89 189
+GET key90
+EXISTS key91
 INCR counter
-SET temp189 189
-SET key90 190
-GET key91
-EXISTS key92
+EXPIRE key93 60
+TTL key94
+SET temp195 195
+SET key96 196
+GET key97
+EXISTS key98
 INCR counter
-SET temp194 194
-SET key95 195
-GET key96
-EXISTS key97
+EXPIRE key0 60
+TTL key1
+SET temp202 202
+SET key3 203
+GET key4
+EXISTS key5
 INCR counter
-SET temp199 199
-SET key0 200
-GET key1
-EXISTS key2
-INCR counter
-SET temp204 204
-SET key5 205
-GET key6
-EXISTS key7
-INCR counter
+EXPIRE key7 60
+TTL key8
 SET temp209 209
 SET key10 210
 GET key11
 EXISTS key12
 INCR counter
-SET temp214 214
-SET key15 215
-GET key16
-EXISTS key17
+EXPIRE key14 60
+TTL key15
+SET temp216 216
+SET key17 217
+GET key18
+EXISTS key19
 INCR counter
-SET temp219 219
-SET key20 220
-GET key21
-EXISTS key22
+EXPIRE key21 60
+TTL key22
+SET temp223 223
+SET key24 224
+GET key25
+EXISTS key26
 INCR counter
-SET temp224 224
-SET key25 225
-GET key26
-EXISTS key27
+EXPIRE key28 60
+TTL key29
+SET temp230 230
+SET key31 231
+GET key32
+EXISTS key33
 INCR counter
-SET temp229 229
-SET key30 230
-GET key31
-EXISTS key32
+EXPIRE key35 60
+TTL key36
+SET temp237 237
+SET key38 238
+GET key39
+EXISTS key40
 INCR counter
-SET temp234 234
-SET key35 235
-GET key36
-EXISTS key37
-INCR counter
-SET temp239 239
-SET key40 240
-GET key41
-EXISTS key42
-INCR counter
+EXPIRE key42 60
+TTL key43
 SET temp244 244
 SET key45 245
 GET key46
 EXISTS key47
 INCR counter
-SET temp249 249
-SET key50 250
-GET key51
-EXISTS key52
+EXPIRE key49 60
+TTL key50
+SET temp251 251
+SET key52 252
+GET key53
+EXISTS key54
 INCR counter
-SET temp254 254
-SET key55 255
-GET key56
-EXISTS key57
+EXPIRE key56 60
+TTL key57
+SET temp258 258
+SET key59 259
+GET key60
+EXISTS key61
 INCR counter
-SET temp259 259
-SET key60 260
-GET key61
-EXISTS key62
+EXPIRE key63 60
+TTL key64
+SET temp265 265
+SET key66 266
+GET key67
+EXISTS key68
 INCR counter
-SET temp264 264
-SET key65 265
-GET key66
-EXISTS key67
+EXPIRE key70 60
+TTL key71
+SET temp272 272
+SET key73 273
+GET key74
+EXISTS key75
 INCR counter
-SET temp269 269
-SET key70 270
-GET key71
-EXISTS key72
-INCR counter
-SET temp274 274
-SET key75 275
-GET key76
-EXISTS key77
-INCR counter
+EXPIRE key77 60
+TTL key78
 SET temp279 279
 SET key80 280
 GET key81
 EXISTS key82
 INCR counter
-SET temp284 284
-SET key85 285
-GET key86
-EXISTS key87
+EXPIRE key84 60
+TTL key85
+SET temp286 286
+SET key87 287
+GET key88
+EXISTS key89
 INCR counter
-SET temp289 289
-SET key90 290
-GET key91
-EXISTS key92
+EXPIRE key91 60
+TTL key92
+SET temp293 293
+SET key94 294
+GET key95
+EXISTS key96
 INCR counter
-SET temp294 294
-SET key95 295
-GET key96
-EXISTS key97
+EXPIRE key98 60
+TTL key99
+SET temp300 300
+SET key1 301
+GET key2
+EXISTS key3
 INCR counter
-SET temp299 299
-SET key0 300
-GET key1
-EXISTS key2
+EXPIRE key5 60
+TTL key6
+SET temp307 307
+SET key8 308
+GET key9
+EXISTS key10
 INCR counter
-SET temp304 304
-SET key5 305
-GET key6
-EXISTS key7
-INCR counter
-SET temp309 309
-SET key10 310
-GET key11
-EXISTS key12
-INCR counter
+EXPIRE key12 60
+TTL key13
 SET temp314 314
 SET key15 315
 GET key16
 EXISTS key17
 INCR counter
-SET temp319 319
-SET key20 320
-GET key21
-EXISTS key22
+EXPIRE key19 60
+TTL key20
+SET temp321 321
+SET key22 322
+GET key23
+EXISTS key24
 INCR counter
-SET temp324 324
-SET key25 325
-GET key26
-EXISTS key27
+EXPIRE key26 60
+TTL key27
+SET temp328 328
+SET key29 329
+GET key30
+EXISTS key31
 INCR counter
-SET temp329 329
-SET key30 330
-GET key31
-EXISTS key32
+EXPIRE key33 60
+TTL key34
+SET temp335 335
+SET key36 336
+GET key37
+EXISTS key38
 INCR counter
-SET temp334 334
-SET key35 335
-GET key36
-EXISTS key37
+EXPIRE key40 60
+TTL key41
+SET temp342 342
+SET key43 343
+GET key44
+EXISTS key45
 INCR counter
-SET temp339 339
-SET key40 340
-GET key41
-EXISTS key42
-INCR counter
-SET temp344 344
-SET key45 345
-GET key46
-EXISTS key47
-INCR counter
+EXPIRE key47 60
+TTL key48
 SET temp349 349
 SET key50 350
 GET key51
 EXISTS key52
 INCR counter
-SET temp354 354
-SET key55 355
-GET key56
-EXISTS key57
+EXPIRE key54 60
+TTL key55
+SET temp356 356
+SET key57 357
+GET key58
+EXISTS key59
 INCR counter
-SET temp359 359
-SET key60 360
-GET key61
-EXISTS key62
+EXPIRE key61 60
+TTL key62
+SET temp363 363
+SET key64 364
+GET key65
+EXISTS key66
 INCR counter
-SET temp364 364
-SET key65 365
-GET key66
-EXISTS key67
+EXPIRE key68 60
+TTL key69
+SET temp370 370
+SET key71 371
+GET key72
+EXISTS key73
 INCR counter
-SET temp369 369
-SET key70 370
-GET key71
-EXISTS key72
+EXPIRE key75 60
+TTL key76
+SET temp377 377
+SET key78 378
+GET key79
+EXISTS key80
 INCR counter
-SET temp374 374
-SET key75 375
-GET key76
-EXISTS key77
-INCR counter
-SET temp379 379
-SET key80 380
-GET key81
-EXISTS key82
-INCR counter
+EXPIRE key82 60
+TTL key83
 SET temp384 384
 SET key85 385
 GET key86
 EXISTS key87
 INCR counter
-SET temp389 389
-SET key90 390
-GET key91
-EXISTS key92
+EXPIRE key89 60
+TTL key90
+SET temp391 391
+SET key92 392
+GET key93
+EXISTS key94
 INCR counter
-SET temp394 394
-SET key95 395
-GET key96
-EXISTS key97
+EXPIRE key96 60
+TTL key97
+SET temp398 398
+SET key99 399
+GET key0
+EXISTS key1
 INCR counter
-SET temp399 399
-SET key0 400
-GET key1
-EXISTS key2
+EXPIRE key3 60
+TTL key4
+SET temp405 405
+SET key6 406
+GET key7
+EXISTS key8
 INCR counter
-SET temp404 404
-SET key5 405
-GET key6
-EXISTS key7
+EXPIRE key10 60
+TTL key11
+SET temp412 412
+SET key13 413
+GET key14
+EXISTS key15
 INCR counter
-SET temp409 409
-SET key10 410
-GET key11
-EXISTS key12
-INCR counter
-SET temp414 414
-SET key15 415
-GET key16
-EXISTS key17
-INCR counter
+EXPIRE key17 60
+TTL key18
 SET temp419 419
 SET key20 420
 GET key21
 EXISTS key22
 INCR counter
-SET temp424 424
-SET key25 425
-GET key26
-EXISTS key27
+EXPIRE key24 60
+TTL key25
+SET temp426 426
+SET key27 427
+GET key28
+EXISTS key29
 INCR counter
-SET temp429 429
-SET key30 430
-GET key31
-EXISTS key32
+EXPIRE key31 60
+TTL key32
+SET temp433 433
+SET key34 434
+GET key35
+EXISTS key36
 INCR counter
-SET temp434 434
-SET key35 435
-GET key36
-EXISTS key37
+EXPIRE key38 60
+TTL key39
+SET temp440 440
+SET key41 441
+GET key42
+EXISTS key43
 INCR counter
-SET temp439 439
-SET key40 440
-GET key41
-EXISTS key42
+EXPIRE key45 60
+TTL key46
+SET temp447 447
+SET key48 448
+GET key49
+EXISTS key50
 INCR counter
-SET temp444 444
-SET key45 445
-GET key46
-EXISTS key47
-INCR counter
-SET temp449 449
-SET key50 450
-GET key51
-EXISTS key52
-INCR counter
+EXPIRE key52 60
+TTL key53
 SET temp454 454
 SET key55 455
 GET key56
 EXISTS key57
 INCR counter
-SET temp459 459
-SET key60 460
-GET key61
-EXISTS key62
+EXPIRE key59 60
+TTL key60
+SET temp461 461
+SET key62 462
+GET key63
+EXISTS key64
 INCR counter
-SET temp464 464
-SET key65 465
-GET key66
-EXISTS key67
+EXPIRE key66 60
+TTL key67
+SET temp468 468
+SET key69 469
+GET key70
+EXISTS key71
 INCR counter
-SET temp469 469
-SET key70 470
-GET key71
-EXISTS key72
+EXPIRE key73 60
+TTL key74
+SET temp475 475
+SET key76 476
+GET key77
+EXISTS key78
 INCR counter
-SET temp474 474
-SET key75 475
-GET key76
-EXISTS key77
+EXPIRE key80 60
+TTL key81
+SET temp482 482
+SET key83 483
+GET key84
+EXISTS key85
 INCR counter
-SET temp479 479
-SET key80 480
-GET key81
-EXISTS key82
-INCR counter
-SET temp484 484
-SET key85 485
-GET key86
-EXISTS key87
-INCR counter
+EXPIRE key87 60
+TTL key88
 SET temp489 489
 SET key90 490
 GET key91
 EXISTS key92
 INCR counter
-SET temp494 494
-SET key95 495
-GET key96
-EXISTS key97
+EXPIRE key94 60
+TTL key95
+SET temp496 496
+SET key97 497
+GET key98
+EXISTS key99
 INCR counter
-SET temp499 499
-SET key0 500
-GET key1
-EXISTS key2
+EXPIRE key1 60
+TTL key2
+SET temp503 503
+SET key4 504
+GET key5
+EXISTS key6
 INCR counter
-SET temp504 504
-SET key5 505
-GET key6
-EXISTS key7
+EXPIRE key8 60
+TTL key9
+SET temp510 510
+SET key11 511
+GET key12
+EXISTS key13
 INCR counter
-SET temp509 509
-SET key10 510
-GET key11
-EXISTS key12
+EXPIRE key15 60
+TTL key16
+SET temp517 517
+SET key18 518
+GET key19
+EXISTS key20
 INCR counter
-SET temp514 514
-SET key15 515
-GET key16
-EXISTS key17
-INCR counter
-SET temp519 519
-SET key20 520
-GET key21
-EXISTS key22
-INCR counter
+EXPIRE key22 60
+TTL key23
 SET temp524 524
 SET key25 525
 GET key26
 EXISTS key27
 INCR counter
-SET temp529 529
-SET key30 530
-GET key31
-EXISTS key32
+EXPIRE key29 60
+TTL key30
+SET temp531 531
+SET key32 532
+GET key33
+EXISTS key34
 INCR counter
-SET temp534 534
-SET key35 535
-GET key36
-EXISTS key37
+EXPIRE key36 60
+TTL key37
+SET temp538 538
+SET key39 539
+GET key40
+EXISTS key41
 INCR counter
-SET temp539 539
-SET key40 540
-GET key41
-EXISTS key42
+EXPIRE key43 60
+TTL key44
+SET temp545 545
+SET key46 546
+GET key47
+EXISTS key48
 INCR counter
-SET temp544 544
-SET key45 545
-GET key46
-EXISTS key47
+EXPIRE key50 60
+TTL key51
+SET temp552 552
+SET key53 553
+GET key54
+EXISTS key55
 INCR counter
-SET temp549 549
-SET key50 550
-GET key51
-EXISTS key52
-INCR counter
-SET temp554 554
-SET key55 555
-GET key56
-EXISTS key57
-INCR counter
+EXPIRE key57 60
+TTL key58
 SET temp559 559
 SET key60 560
 GET key61
 EXISTS key62
 INCR counter
-SET temp564 564
-SET key65 565
-GET key66
-EXISTS key67
+EXPIRE key64 60
+TTL key65
+SET temp566 566
+SET key67 567
+GET key68
+EXISTS key69
 INCR counter
-SET temp569 569
-SET key70 570
-GET key71
-EXISTS key72
+EXPIRE key71 60
+TTL key72
+SET temp573 573
+SET key74 574
+GET key75
+EXISTS key76
 INCR counter
-SET temp574 574
-SET key75 575
-GET key76
-EXISTS key77
+EXPIRE key78 60
+TTL key79
+SET temp580 580
+SET key81 581
+GET key82
+EXISTS key83
 INCR counter
-SET temp579 579
-SET key80 580
-GET key81
-EXISTS key82
+EXPIRE key85 60
+TTL key86
+SET temp587 587
+SET key88 588
+GET key89
+EXISTS key90
 INCR counter
-SET temp584 584
-SET key85 585
-GET key86
-EXISTS key87
-INCR counter
-SET temp589 589
-SET key90 590
-GET key91
-EXISTS key92
-INCR counter
+EXPIRE key92 60
+TTL key93
 SET temp594 594
 SET key95 595
 GET key96
 EXISTS key97
 INCR counter
-SET temp599 599
-SET key0 600
-GET key1
-EXISTS key2
+EXPIRE key99 60
+TTL key0
+SET temp601 601
+SET key2 602
+GET key3
+EXISTS key4
 INCR counter
-SET temp604 604
-SET key5 605
-GET key6
-EXISTS key7
+EXPIRE key6 60
+TTL key7
+SET temp608 608
+SET key9 609
+GET key10
+EXISTS key11
 INCR counter
-SET temp609 609
-SET key10 610
-GET key11
-EXISTS key12
+EXPIRE key13 60
+TTL key14
+SET temp615 615
+SET key16 616
+GET key17
+EXISTS key18
 INCR counter
-SET temp614 614
-SET key15 615
-GET key16
-EXISTS key17
+EXPIRE key20 60
+TTL key21
+SET temp622 622
+SET key23 623
+GET key24
+EXISTS key25
 INCR counter
-SET temp619 619
-SET key20 620
-GET key21
-EXISTS key22
-INCR counter
-SET temp624 624
-SET key25 625
-GET key26
-EXISTS key27
-INCR counter
+EXPIRE key27 60
+TTL key28
 SET temp629 629
 SET key30 630
 GET key31
 EXISTS key32
 INCR counter
-SET temp634 634
-SET key35 635
-GET key36
-EXISTS key37
+EXPIRE key34 60
+TTL key35
+SET temp636 636
+SET key37 637
+GET key38
+EXISTS key39
 INCR counter
-SET temp639 639
-SET key40 640
-GET key41
-EXISTS key42
+EXPIRE key41 60
+TTL key42
+SET temp643 643
+SET key44 644
+GET key45
+EXISTS key46
 INCR counter
-SET temp644 644
-SET key45 645
-GET key46
-EXISTS key47
+EXPIRE key48 60
+TTL key49
+SET temp650 650
+SET key51 651
+GET key52
+EXISTS key53
 INCR counter
-SET temp649 649
-SET key50 650
-GET key51
-EXISTS key52
+EXPIRE key55 60
+TTL key56
+SET temp657 657
+SET key58 658
+GET key59
+EXISTS key60
 INCR counter
-SET temp654 654
-SET key55 655
-GET key56
-EXISTS key57
-INCR counter
-SET temp659 659
-SET key60 660
-GET key61
-EXISTS key62
-INCR counter
+EXPIRE key62 60
+TTL key63
 SET temp664 664
 SET key65 665
 GET key66
 EXISTS key67
 INCR counter
-SET temp669 669
-SET key70 670
-GET key71
-EXISTS key72
+EXPIRE key69 60
+TTL key70
+SET temp671 671
+SET key72 672
+GET key73
+EXISTS key74
 INCR counter
-SET temp674 674
-SET key75 675
-GET key76
-EXISTS key77
+EXPIRE key76 60
+TTL key77
+SET temp678 678
+SET key79 679
+GET key80
+EXISTS key81
 INCR counter
-SET temp679 679
-SET key80 680
-GET key81
-EXISTS key82
+EXPIRE key83 60
+TTL key84
+SET temp685 685
+SET key86 686
+GET key87
+EXISTS key88
 INCR counter
-SET temp684 684
-SET key85 685
-GET key86
-EXISTS key87
+EXPIRE key90 60
+TTL key91
+SET temp692 692
+SET key93 693
+GET key94
+EXISTS key95
 INCR counter
-SET temp689 689
-SET key90 690
-GET key91
-EXISTS key92
-INCR counter
-SET temp694 694
-SET key95 695
-GET key96
-EXISTS key97
-INCR counter
+EXPIRE key97 60
+TTL key98
 SET temp699 699
 SET key0 700
 GET key1
 EXISTS key2
 INCR counter
-SET temp704 704
-SET key5 705
-GET key6
-EXISTS key7
+EXPIRE key4 60
+TTL key5
+SET temp706 706
+SET key7 707
+GET key8
+EXISTS key9
 INCR counter
-SET temp709 709
-SET key10 710
-GET key11
-EXISTS key12
+EXPIRE key11 60
+TTL key12
+SET temp713 713
+SET key14 714
+GET key15
+EXISTS key16
 INCR counter
-SET temp714 714
-SET key15 715
-GET key16
-EXISTS key17
+EXPIRE key18 60
+TTL key19
+SET temp720 720
+SET key21 721
+GET key22
+EXISTS key23
 INCR counter
-SET temp719 719
-SET key20 720
-GET key21
-EXISTS key22
+EXPIRE key25 60
+TTL key26
+SET temp727 727
+SET key28 728
+GET key29
+EXISTS key30
 INCR counter
-SET temp724 724
-SET key25 725
-GET key26
-EXISTS key27
-INCR counter
-SET temp729 729
-SET key30 730
-GET key31
-EXISTS key32
-INCR counter
+EXPIRE key32 60
+TTL key33
 SET temp734 734
 SET key35 735
 GET key36
 EXISTS key37
 INCR counter
-SET temp739 739
-SET key40 740
-GET key41
-EXISTS key42
+EXPIRE key39 60
+TTL key40
+SET temp741 741
+SET key42 742
+GET key43
+EXISTS key44
 INCR counter
-SET temp744 744
-SET key45 745
-GET key46
-EXISTS key47
+EXPIRE key46 60
+TTL key47
+SET temp748 748
+SET key49 749
+GET key50
+EXISTS key51
 INCR counter
-SET temp749 749
-SET key50 750
-GET key51
-EXISTS key52
+EXPIRE key53 60
+TTL key54
+SET temp755 755
+SET key56 756
+GET key57
+EXISTS key58
 INCR counter
-SET temp754 754
-SET key55 755
-GET key56
-EXISTS key57
+EXPIRE key60 60
+TTL key61
+SET temp762 762
+SET key63 763
+GET key64
+EXISTS key65
 INCR counter
-SET temp759 759
-SET key60 760
-GET key61
-EXISTS key62
-INCR counter
-SET temp764 764
-SET key65 765
-GET key66
-EXISTS key67
-INCR counter
+EXPIRE key67 60
+TTL key68
 SET temp769 769
 SET key70 770
 GET key71
 EXISTS key72
 INCR counter
-SET temp774 774
-SET key75 775
-GET key76
-EXISTS key77
+EXPIRE key74 60
+TTL key75
+SET temp776 776
+SET key77 777
+GET key78
+EXISTS key79
 INCR counter
-SET temp779 779
-SET key80 780
-GET key81
-EXISTS key82
+EXPIRE key81 60
+TTL key82
+SET temp783 783
+SET key84 784
+GET key85
+EXISTS key86
 INCR counter
-SET temp784 784
-SET key85 785
-GET key86
-EXISTS key87
+EXPIRE key88 60
+TTL key89
+SET temp790 790
+SET key91 791
+GET key92
+EXISTS key93
 INCR counter
-SET temp789 789
-SET key90 790
-GET key91
-EXISTS key92
+EXPIRE key95 60
+TTL key96
+SET temp797 797
+SET key98 798
+GET key99
+EXISTS key0
 INCR counter
-SET temp794 794
-SET key95 795
-GET key96
-EXISTS key97
-INCR counter
-SET temp799 799
-SET key0 800
-GET key1
-EXISTS key2
-INCR counter
+EXPIRE key2 60
+TTL key3
 SET temp804 804
 SET key5 805
 GET key6
 EXISTS key7
 INCR counter
-SET temp809 809
-SET key10 810
-GET key11
-EXISTS key12
+EXPIRE key9 60
+TTL key10
+SET temp811 811
+SET key12 812
+GET key13
+EXISTS key14
 INCR counter
-SET temp814 814
-SET key15 815
-GET key16
-EXISTS key17
+EXPIRE key16 60
+TTL key17
+SET temp818 818
+SET key19 819
+GET key20
+EXISTS key21
 INCR counter
-SET temp819 819
-SET key20 820
-GET key21
-EXISTS key22
+EXPIRE key23 60
+TTL key24
+SET temp825 825
+SET key26 826
+GET key27
+EXISTS key28
 INCR counter
-SET temp824 824
-SET key25 825
-GET key26
-EXISTS key27
+EXPIRE key30 60
+TTL key31
+SET temp832 832
+SET key33 833
+GET key34
+EXISTS key35
 INCR counter
-SET temp829 829
-SET key30 830
-GET key31
-EXISTS key32
-INCR counter
-SET temp834 834
-SET key35 835
-GET key36
-EXISTS key37
-INCR counter
+EXPIRE key37 60
+TTL key38
 SET temp839 839
 SET key40 840
 GET key41
 EXISTS key42
 INCR counter
-SET temp844 844
-SET key45 845
-GET key46
-EXISTS key47
+EXPIRE key44 60
+TTL key45
+SET temp846 846
+SET key47 847
+GET key48
+EXISTS key49
 INCR counter
-SET temp849 849
-SET key50 850
-GET key51
-EXISTS key52
+EXPIRE key51 60
+TTL key52
+SET temp853 853
+SET key54 854
+GET key55
+EXISTS key56
 INCR counter
-SET temp854 854
-SET key55 855
-GET key56
-EXISTS key57
+EXPIRE key58 60
+TTL key59
+SET temp860 860
+SET key61 861
+GET key62
+EXISTS key63
 INCR counter
-SET temp859 859
-SET key60 860
-GET key61
-EXISTS key62
+EXPIRE key65 60
+TTL key66
+SET temp867 867
+SET key68 868
+GET key69
+EXISTS key70
 INCR counter
-SET temp864 864
-SET key65 865
-GET key66
-EXISTS key67
-INCR counter
-SET temp869 869
-SET key70 870
-GET key71
-EXISTS key72
-INCR counter
+EXPIRE key72 60
+TTL key73
 SET temp874 874
 SET key75 875
 GET key76
 EXISTS key77
 INCR counter
-SET temp879 879
-SET key80 880
-GET key81
-EXISTS key82
+EXPIRE key79 60
+TTL key80
+SET temp881 881
+SET key82 882
+GET key83
+EXISTS key84
 INCR counter
-SET temp884 884
-SET key85 885
-GET key86
-EXISTS key87
+EXPIRE key86 60
+TTL key87
+SET temp888 888
+SET key89 889
+GET key90
+EXISTS key91
 INCR counter
-SET temp889 889
-SET key90 890
-GET key91
-EXISTS key92
+EXPIRE key93 60
+TTL key94
+SET temp895 895
+SET key96 896
+GET key97
+EXISTS key98
 INCR counter
-SET temp894 894
-SET key95 895
-GET key96
-EXISTS key97
+EXPIRE key0 60
+TTL key1
+SET temp902 902
+SET key3 903
+GET key4
+EXISTS key5
 INCR counter
-SET temp899 899
-SET key0 900
-GET key1
-EXISTS key2
-INCR counter
-SET temp904 904
-SET key5 905
-GET key6
-EXISTS key7
-INCR counter
+EXPIRE key7 60
+TTL key8
 SET temp909 909
 SET key10 910
 GET key11
 EXISTS key12
 INCR counter
-SET temp914 914
-SET key15 915
-GET key16
-EXISTS key17
+EXPIRE key14 60
+TTL key15
+SET temp916 916
+SET key17 917
+GET key18
+EXISTS key19
 INCR counter
-SET temp919 919
-SET key20 920
-GET key21
-EXISTS key22
+EXPIRE key21 60
+TTL key22
+SET temp923 923
+SET key24 924
+GET key25
+EXISTS key26
 INCR counter
-SET temp924 924
-SET key25 925
-GET key26
-EXISTS key27
+EXPIRE key28 60
+TTL key29
+SET temp930 930
+SET key31 931
+GET key32
+EXISTS key33
 INCR counter
-SET temp929 929
-SET key30 930
-GET key31
-EXISTS key32
+EXPIRE key35 60
+TTL key36
+SET temp937 937
+SET key38 938
+GET key39
+EXISTS key40
 INCR counter
-SET temp934 934
-SET key35 935
-GET key36
-EXISTS key37
-INCR counter
-SET temp939 939
-SET key40 940
-GET key41
-EXISTS key42
-INCR counter
+EXPIRE key42 60
+TTL key43
 SET temp944 944
 SET key45 945
 GET key46
 EXISTS key47
 INCR counter
-SET temp949 949
-SET key50 950
-GET key51
-EXISTS key52
+EXPIRE key49 60
+TTL key50
+SET temp951 951
+SET key52 952
+GET key53
+EXISTS key54
 INCR counter
-SET temp954 954
-SET key55 955
-GET key56
-EXISTS key57
+EXPIRE key56 60
+TTL key57
+SET temp958 958
+SET key59 959
+GET key60
+EXISTS key61
 INCR counter
-SET temp959 959
-SET key60 960
-GET key61
-EXISTS key62
+EXPIRE key63 60
+TTL key64
+SET temp965 965
+SET key66 966
+GET key67
+EXISTS key68
 INCR counter
-SET temp964 964
-SET key65 965
-GET key66
-EXISTS key67
+EXPIRE key70 60
+TTL key71
+SET temp972 972
+SET key73 973
+GET key74
+EXISTS key75
 INCR counter
-SET temp969 969
-SET key70 970
-GET key71
-EXISTS key72
-INCR counter
-SET temp974 974
-SET key75 975
-GET key76
-EXISTS key77
-INCR counter
+EXPIRE key77 60
+TTL key78
 SET temp979 979
 SET key80 980
 GET key81
 EXISTS key82
 INCR counter
-SET temp984 984
-SET key85 985
-GET key86
-EXISTS key87
+EXPIRE key84 60
+TTL key85
+SET temp986 986
+SET key87 987
+GET key88
+EXISTS key89
 INCR counter
-SET temp989 989
-SET key90 990
-GET key91
-EXISTS key92
+EXPIRE key91 60
+TTL key92
+SET temp993 993
+SET key94 994
+GET key95
+EXISTS key96
 INCR counter
-SET temp994 994
-SET key95 995
-GET key96
-EXISTS key97
-INCR counter
-SET temp999 999
+EXPIRE key98 60
+TTL key99

@@ -1,12 +1,14 @@
 /// Definizione dei comandi supportati da MiniDB.
 #[derive(Debug, PartialEq)]
 pub enum Command {
-    Ping,                               // verifica che MiniDB risponda
-    Set { key: String, value: String }, // imposta il valore associato a una chiave
-    Get { key: String },                // recupera il valore associato a una chiave
-    Del { key: String },                // elimina una chiave dal db
-    Exists { key: String },             // verifica se una chiave esiste
-    Incr { key: String },               // incrementa di 1 il valore numerico di una chiave
+    Ping,                                   // verifica che MiniDB risponda
+    Set { key: String, value: String },     // imposta il valore associato a una chiave
+    Get { key: String },                    // recupera il valore associato a una chiave
+    Del { key: String },                    // elimina una chiave dal db
+    Exists { key: String },                 // verifica se una chiave esiste
+    Incr { key: String },                   // incrementa di 1 il valore numerico di una chiave
+    Expire { key: String, seconds: i64 },   // imposta una scadenza in secondi
+    Ttl { key: String },                    // restituisce i secondi rimanenti prima della scadenza
 }
 
 impl Command {
@@ -65,6 +67,26 @@ impl Command {
                     return Err("wrong number of arguments for INCR".to_string());
                 }
                 Ok(Command::Incr {
+                    key: parts[1].to_string(),
+                })
+            }
+            "EXPIRE" => {
+                if parts.len() != 3 {
+                    return Err("wrong number of arguments for EXPIRE".to_string());
+                }
+                let seconds = parts[2]
+                    .parse::<i64>()
+                    .map_err(|_| "invalid expire seconds".to_string())?;
+                Ok(Command::Expire {
+                    key: parts[1].to_string(),
+                    seconds,
+                })
+            }
+            "TTL" => {
+                if parts.len() != 2 {
+                    return Err("wrong number of arguments for TTL".to_string());
+                }
+                Ok(Command::Ttl {
                     key: parts[1].to_string(),
                 })
             }
@@ -135,6 +157,27 @@ mod tests {
     }
 
     #[test]
+    fn parses_expire_command() {
+        assert_eq!(
+            Command::parse("EXPIRE session 30"),
+            Ok(Command::Expire {
+                key: "session".to_string(),
+                seconds: 30,
+            })
+        );
+    }
+
+    #[test]
+    fn parses_ttl_command() {
+        assert_eq!(
+            Command::parse("TTL session"),
+            Ok(Command::Ttl {
+                key: "session".to_string(),
+            })
+        );
+    }
+
+    #[test]
     fn parses_commands_case_insensitively() {
         assert_eq!(Command::parse("ping"), Ok(Command::Ping));
     }
@@ -160,6 +203,14 @@ mod tests {
         assert_eq!(
             Command::parse("GET"),
             Err("wrong number of arguments for GET".to_string())
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_expire_seconds() {
+        assert_eq!(
+            Command::parse("EXPIRE user soon"),
+            Err("invalid expire seconds".to_string())
         );
     }
 
