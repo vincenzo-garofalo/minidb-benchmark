@@ -280,7 +280,20 @@ I workload attualmente previsti sono:
 - `small_read_heavy.txt`, `medium_read_heavy.txt`, `large_read_heavy.txt`:
   workload con circa 80% `GET`, 10% `SET`, 10% `EXISTS`;
 - `small_write_heavy.txt`, `medium_write_heavy.txt`, `large_write_heavy.txt`:
-  workload con circa 80% `SET`, 10% `GET`, 10% `EXISTS`.
+  workload con circa 80% `SET`, 10% `GET`, 10% `EXISTS`;
+- `small_numeric_incr.txt`, `medium_numeric_incr.txt`,
+  `large_numeric_incr.txt`: workload dedicati a `INCR` su valori numerici
+  validi, pensati per isolare il costo delle operazioni di incremento;
+- `small_ttl_expiration.txt`, `medium_ttl_expiration.txt`,
+  `large_ttl_expiration.txt`: workload dedicati a `EXPIRE` e `TTL`, con chiavi
+  fatte scadere immediatamente tramite `EXPIRE key 0` e verificate subito dopo
+  con `GET`, `TTL` ed `EXISTS`;
+- `small_hot_keys.txt`, `medium_hot_keys.txt`, `large_hot_keys.txt`: workload
+  con poche chiavi riutilizzate molte volte, pensati per misurare accessi con
+  alta località;
+- `small_high_cardinality.txt`, `medium_high_cardinality.txt`,
+  `large_high_cardinality.txt`: workload con molte chiavi distinte, pensati per
+  misurare l'effetto della cardinalità su throughput, latenze e memoria.
 
 I workload sono deterministici: a parità di file, Python, Java e Rust ricevono
 la stessa sequenza di comandi nello stesso ordine.

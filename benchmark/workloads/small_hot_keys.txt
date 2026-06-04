@@ -1,0 +1,1000 @@
+SET hot_key0 0
+SET hot_key0 1
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 10
+SET hot_key1 11
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 20
+SET hot_key2 21
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 30
+SET hot_key3 31
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 40
+SET hot_key4 41
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 50
+SET hot_key5 51
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 60
+SET hot_key6 61
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 70
+SET hot_key7 71
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 80
+SET hot_key8 81
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 90
+SET hot_key9 91
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 100
+SET hot_key0 101
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 110
+SET hot_key1 111
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 120
+SET hot_key2 121
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 130
+SET hot_key3 131
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 140
+SET hot_key4 141
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 150
+SET hot_key5 151
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 160
+SET hot_key6 161
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 170
+SET hot_key7 171
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 180
+SET hot_key8 181
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 190
+SET hot_key9 191
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 200
+SET hot_key0 201
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 210
+SET hot_key1 211
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 220
+SET hot_key2 221
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 230
+SET hot_key3 231
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 240
+SET hot_key4 241
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 250
+SET hot_key5 251
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 260
+SET hot_key6 261
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 270
+SET hot_key7 271
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 280
+SET hot_key8 281
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 290
+SET hot_key9 291
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 300
+SET hot_key0 301
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 310
+SET hot_key1 311
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 320
+SET hot_key2 321
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 330
+SET hot_key3 331
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 340
+SET hot_key4 341
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 350
+SET hot_key5 351
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 360
+SET hot_key6 361
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 370
+SET hot_key7 371
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 380
+SET hot_key8 381
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 390
+SET hot_key9 391
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 400
+SET hot_key0 401
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 410
+SET hot_key1 411
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 420
+SET hot_key2 421
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 430
+SET hot_key3 431
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 440
+SET hot_key4 441
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 450
+SET hot_key5 451
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 460
+SET hot_key6 461
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 470
+SET hot_key7 471
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 480
+SET hot_key8 481
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 490
+SET hot_key9 491
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 500
+SET hot_key0 501
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 510
+SET hot_key1 511
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 520
+SET hot_key2 521
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 530
+SET hot_key3 531
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 540
+SET hot_key4 541
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 550
+SET hot_key5 551
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 560
+SET hot_key6 561
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 570
+SET hot_key7 571
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 580
+SET hot_key8 581
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 590
+SET hot_key9 591
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 600
+SET hot_key0 601
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 610
+SET hot_key1 611
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 620
+SET hot_key2 621
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 630
+SET hot_key3 631
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 640
+SET hot_key4 641
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 650
+SET hot_key5 651
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 660
+SET hot_key6 661
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 670
+SET hot_key7 671
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 680
+SET hot_key8 681
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 690
+SET hot_key9 691
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 700
+SET hot_key0 701
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 710
+SET hot_key1 711
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 720
+SET hot_key2 721
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 730
+SET hot_key3 731
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 740
+SET hot_key4 741
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 750
+SET hot_key5 751
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 760
+SET hot_key6 761
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 770
+SET hot_key7 771
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 780
+SET hot_key8 781
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 790
+SET hot_key9 791
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 800
+SET hot_key0 801
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 810
+SET hot_key1 811
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 820
+SET hot_key2 821
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 830
+SET hot_key3 831
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 840
+SET hot_key4 841
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 850
+SET hot_key5 851
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 860
+SET hot_key6 861
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 870
+SET hot_key7 871
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 880
+SET hot_key8 881
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 890
+SET hot_key9 891
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9
+SET hot_key0 900
+SET hot_key0 901
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+GET hot_key0
+EXISTS hot_key0
+INCR hot_counter0
+TTL hot_key0
+SET hot_key1 910
+SET hot_key1 911
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+GET hot_key1
+EXISTS hot_key1
+INCR hot_counter2
+TTL hot_key1
+SET hot_key2 920
+SET hot_key2 921
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+GET hot_key2
+EXISTS hot_key2
+INCR hot_counter0
+TTL hot_key2
+SET hot_key3 930
+SET hot_key3 931
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+GET hot_key3
+EXISTS hot_key3
+INCR hot_counter2
+TTL hot_key3
+SET hot_key4 940
+SET hot_key4 941
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+GET hot_key4
+EXISTS hot_key4
+INCR hot_counter0
+TTL hot_key4
+SET hot_key5 950
+SET hot_key5 951
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+GET hot_key5
+EXISTS hot_key5
+INCR hot_counter2
+TTL hot_key5
+SET hot_key6 960
+SET hot_key6 961
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+GET hot_key6
+EXISTS hot_key6
+INCR hot_counter0
+TTL hot_key6
+SET hot_key7 970
+SET hot_key7 971
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+GET hot_key7
+EXISTS hot_key7
+INCR hot_counter2
+TTL hot_key7
+SET hot_key8 980
+SET hot_key8 981
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+GET hot_key8
+EXISTS hot_key8
+INCR hot_counter0
+TTL hot_key8
+SET hot_key9 990
+SET hot_key9 991
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+GET hot_key9
+EXISTS hot_key9
+INCR hot_counter2
+TTL hot_key9

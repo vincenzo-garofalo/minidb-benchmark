@@ -55,16 +55,28 @@ public final class BenchmarkRunner {
     private static final int MEMORY_SYNC_SAMPLE_EVERY_COMMANDS = 10_000;    // campionamento sincrono della memoria ogni 10.000 comandi
 
     // mappa nome-file -> numero di comandi da generare per quel workload.
-    private static final Map<String, Integer> WORKLOAD_SIZES = Map.of(
-            "small_mixed.txt", 1_000,
-            "medium_mixed.txt", 10_000,
-            "large_mixed.txt", 100_000,
-            "small_read_heavy.txt", 1_000,
-            "medium_read_heavy.txt", 10_000,
-            "large_read_heavy.txt", 100_000,
-            "small_write_heavy.txt", 1_000,
-            "medium_write_heavy.txt", 10_000,
-            "large_write_heavy.txt", 100_000
+    private static final Map<String, Integer> WORKLOAD_SIZES = Map.ofEntries(
+            Map.entry("small_mixed.txt", 1_000),
+            Map.entry("medium_mixed.txt", 10_000),
+            Map.entry("large_mixed.txt", 100_000),
+            Map.entry("small_read_heavy.txt", 1_000),
+            Map.entry("medium_read_heavy.txt", 10_000),
+            Map.entry("large_read_heavy.txt", 100_000),
+            Map.entry("small_write_heavy.txt", 1_000),
+            Map.entry("medium_write_heavy.txt", 10_000),
+            Map.entry("large_write_heavy.txt", 100_000),
+            Map.entry("small_numeric_incr.txt", 1_000),
+            Map.entry("medium_numeric_incr.txt", 10_000),
+            Map.entry("large_numeric_incr.txt", 100_000),
+            Map.entry("small_ttl_expiration.txt", 1_000),
+            Map.entry("medium_ttl_expiration.txt", 10_000),
+            Map.entry("large_ttl_expiration.txt", 100_000),
+            Map.entry("small_hot_keys.txt", 1_000),
+            Map.entry("medium_hot_keys.txt", 10_000),
+            Map.entry("large_hot_keys.txt", 100_000),
+            Map.entry("small_high_cardinality.txt", 1_000),
+            Map.entry("medium_high_cardinality.txt", 10_000),
+            Map.entry("large_high_cardinality.txt", 100_000)
     );
 
     // costruttore di default privato per evitare istanze non necessarie.
@@ -195,6 +207,18 @@ public final class BenchmarkRunner {
         if (fileName.contains("write_heavy")) {
             return generateWriteHeavyCommands(commandCount);
         }
+        if (fileName.contains("numeric_incr")) {
+            return generateNumericIncrCommands(commandCount);
+        }
+        if (fileName.contains("ttl_expiration")) {
+            return generateTtlExpirationCommands(commandCount);
+        }
+        if (fileName.contains("hot_keys")) {
+            return generateHotKeysCommands(commandCount);
+        }
+        if (fileName.contains("high_cardinality")) {
+            return generateHighCardinalityCommands(commandCount);
+        }
         return generateMixedCommands(commandCount);
     }
 
@@ -262,6 +286,99 @@ public final class BenchmarkRunner {
                 commands.add("GET " + key);
             } else {
                 commands.add("EXISTS " + key);
+            }
+        }
+
+        return commands;
+    }
+
+    /// Metodo helper che costruisce un workload dedicato a INCR su valori numerici validi.
+    private static List<String> generateNumericIncrCommands(int commandCount) {
+        List<String> commands = new ArrayList<>(commandCount);
+        int keyCount = Math.max(100, Math.min(commandCount / 8, 10_000)); // contatori numerici distinti, proporzionati alla dimensione del workload
+
+        for (int index = 0; index < commandCount; index++) {
+            int cycle = index / 8; // ogni ciclo contiene 8 comandi sullo stesso contatore
+            String key = "counter_key" + (cycle % keyCount);
+            int operation = index % 8; // ogni 8 comandi: 1 SET numerico, 4 INCR, 1 GET, 1 EXISTS, 1 TTL
+            switch (operation) {
+                case 0 -> commands.add("SET " + key + " 0");
+                case 1, 2, 4, 7 -> commands.add("INCR " + key);
+                case 3 -> commands.add("GET " + key);
+                case 5 -> commands.add("EXISTS " + key);
+                default -> commands.add("TTL " + key);
+            }
+        }
+
+        return commands;
+    }
+
+    /// Metodo helper che costruisce un workload dedicato a EXPIRE/TTL con scadenze immediate e controlli successivi.
+    private static List<String> generateTtlExpirationCommands(int commandCount) {
+        List<String> commands = new ArrayList<>(commandCount);
+        int keyCount = Math.max(100, Math.min(commandCount / 8, 10_000)); // numero di chiavi TTL usate, proporzionato alla dimensione del workload
+
+        for (int index = 0; index < commandCount; index++) {
+            int cycle = index / 8; // ogni ciclo contiene 8 comandi dedicati allo stesso indice logico
+            String expiringKey = "ttl_key" + (cycle % keyCount); // chiave fatta scadere subito con EXPIRE 0
+            String persistentKey = "persistent_key" + (cycle % keyCount); // chiave con TTL positivo, ancora valida durante il workload
+            int operation = index % 8; // ogni 8 comandi: SET/EXPIRE immediato/verifiche + SET/EXPIRE lungo/TTL
+            switch (operation) {
+                case 0 -> commands.add("SET " + expiringKey + " " + index);
+                case 1 -> commands.add("EXPIRE " + expiringKey + " 0");
+                case 2 -> commands.add("GET " + expiringKey);
+                case 3 -> commands.add("TTL " + expiringKey);
+                case 4 -> commands.add("EXISTS " + expiringKey);
+                case 5 -> commands.add("SET " + persistentKey + " " + index);
+                case 6 -> commands.add("EXPIRE " + persistentKey + " 60");
+                default -> commands.add("TTL " + persistentKey);
+            }
+        }
+
+        return commands;
+    }
+
+    /// Metodo helper che costruisce un workload con poche chiavi molto riutilizzate.
+    private static List<String> generateHotKeysCommands(int commandCount) {
+        List<String> commands = new ArrayList<>(commandCount);
+        int keyCount = Math.max(10, Math.min(commandCount / 100, 100)); // poche chiavi "calde", da 10 a 100 in base alla dimensione
+
+        for (int index = 0; index < commandCount; index++) {
+            String key = "hot_key" + ((index / 10) % keyCount); // la stessa chiave viene riutilizzata per 10 comandi consecutivi
+            int operation = index % 10; // ogni 10 comandi: 2 SET, 5 GET, 1 EXISTS, 1 INCR, 1 TTL
+            if (operation < 2) {
+                commands.add("SET " + key + " " + index);
+            } else if (operation < 7) {
+                commands.add("GET " + key);
+            } else if (operation == 7) {
+                commands.add("EXISTS " + key);
+            } else if (operation == 8) {
+                commands.add("INCR hot_counter" + (index % 4));
+            } else {
+                commands.add("TTL " + key);
+            }
+        }
+
+        return commands;
+    }
+
+    /// Metodo helper che costruisce un workload con molte chiavi distinte per stressare cardinalità e memoria.
+    private static List<String> generateHighCardinalityCommands(int commandCount) {
+        List<String> commands = new ArrayList<>(commandCount);
+
+        for (int index = 0; index < commandCount; index++) {
+            String key = "unique_key" + index; // nuova chiave per quasi ogni iterazione, per aumentare la cardinalità
+            int operation = index % 10; // ogni 10 comandi: 6 SET unici, 2 GET su chiavi recenti, 1 GET miss, 1 SET extra
+            if (operation < 6) {
+                commands.add("SET " + key + " " + index);
+            } else if (operation == 6) {
+                commands.add("GET unique_key" + Math.max(0, index - 3));
+            } else if (operation == 7) {
+                commands.add("EXISTS unique_key" + Math.max(0, index - 5));
+            } else if (operation == 8) {
+                commands.add("GET missing_unique_key" + index);
+            } else {
+                commands.add("SET unique_extra_key" + index + " " + index);
             }
         }
 
