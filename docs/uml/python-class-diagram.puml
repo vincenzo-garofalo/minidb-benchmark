@@ -1,0 +1,57 @@
+@startuml
+title MiniDB Python - Diagramma delle Classi
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "main.py" {
+  class main <<function>> {
+    + main(): None
+  }
+}
+
+package "command.py" {
+  class Command <<dataclass frozen>> {
+    + name: str
+    + key: str | None
+    + value: str | None
+    + seconds: int | None
+    + {static} parse(input_line: str): Command
+  }
+}
+
+package "db.py" {
+  class MiniDb {
+    - _data: dict[str, str]
+    - _expires_at: dict[str, float]
+    + __init__(): None
+    + execute(command: Command): Response
+    - _remove_if_expired(key: str): None
+  }
+}
+
+package "response.py" {
+  class Response <<dataclass frozen>> {
+    + kind: str
+    + value: str | int | None
+    + {static} text(value: str): Response
+    + {static} not_found(): Response
+    + {static} integer(value: int): Response
+    + {static} error(message: str): Response
+    + to_text(): str
+  }
+}
+
+main ..> Command : parse input
+main --> MiniDb : crea e usa
+main ..> Response : stampa output
+MiniDb --> Command : legge comando
+MiniDb --> Response : produce
+
+note bottom of MiniDb
+Il database usa dizionari Python:
+_data per i valori,
+_expires_at per timestamp monotonic.
+end note
+
+@enduml

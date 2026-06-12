@@ -1,0 +1,75 @@
+@startuml
+title MiniDB Java - Diagramma delle Classi
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Main <<utility>> {
+  - Main()
+  + {static} main(args: String[]): void
+}
+
+class Command <<final>> {
+  - name: String
+  - key: String
+  - value: String
+  - seconds: Long
+  - Command(name: String, key: String, value: String, seconds: Long)
+  + {static} ping(): Command
+  + {static} set(key: String, value: String): Command
+  + {static} get(key: String): Command
+  + {static} del(key: String): Command
+  + {static} exists(key: String): Command
+  + {static} incr(key: String): Command
+  + {static} expire(key: String, seconds: long): Command
+  + {static} ttl(key: String): Command
+  + {static} parse(inputLine: String): Command
+  + name(): String
+  + key(): String
+  + value(): String
+  + seconds(): Long
+}
+
+class MiniDb <<final>> {
+  - data: Map<String, String>
+  - expiresAt: Map<String, Long>
+  + execute(command: Command): Response
+  - incr(key: String): Response
+  - expire(key: String, seconds: long): Response
+  - ttl(key: String): Response
+  - removeIfExpired(key: String): void
+}
+
+class Response <<final>> {
+  - kind: Kind
+  - textValue: String
+  - integerValue: Long
+  - Response(kind: Kind, textValue: String, integerValue: Long)
+  + {static} text(value: String): Response
+  + {static} notFound(): Response
+  + {static} integer(value: long): Response
+  + {static} error(message: String): Response
+  + toText(): String
+}
+
+enum Kind {
+  TEXT
+  NOT_FOUND
+  INTEGER
+  ERROR
+}
+
+Main ..> Command : parse input
+Main --> MiniDb : crea e usa
+Main ..> Response : stampa output
+MiniDb --> Command : legge comando
+MiniDb --> Response : produce
+Response *-- Kind
+
+note bottom of MiniDb
+Lo stato e' mantenuto in memoria:
+data contiene chiave-valore,
+expiresAt contiene le scadenze.
+end note
+
+@enduml

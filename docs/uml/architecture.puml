@@ -1,0 +1,61 @@
+@startuml
+title MiniDB Benchmark - Vista Architetturale
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+package "Specifica comune" {
+  artifact "spec/commands.md" as Spec
+}
+
+package "Implementazioni MiniDB" {
+  component "Java MiniDB" as JavaMiniDb {
+    [Main]
+    [Command]
+    [MiniDb]
+    [Response]
+  }
+
+  component "Python MiniDB" as PythonMiniDb {
+    [main.py]
+    [command.py]
+    [db.py]
+    [response.py]
+  }
+
+  component "Rust MiniDB" as RustMiniDb {
+    [main.rs]
+    [command.rs]
+    [db.rs]
+    [response.rs]
+  }
+}
+
+package "Benchmark" {
+  component "BenchmarkRunner" as BenchmarkRunner
+  folder "benchmark/workloads" as Workloads
+  database "benchmark/results" as Results
+}
+
+Spec ..> JavaMiniDb : definisce comportamento
+Spec ..> PythonMiniDb : definisce comportamento
+Spec ..> RustMiniDb : definisce comportamento
+
+BenchmarkRunner --> Workloads : legge comandi
+BenchmarkRunner --> JavaMiniDb : avvia processo
+BenchmarkRunner --> PythonMiniDb : avvia processo
+BenchmarkRunner --> RustMiniDb : avvia processo
+BenchmarkRunner --> Results : scrive CSV e riepiloghi
+
+note right of Spec
+Comandi supportati:
+PING, SET, GET, DEL,
+EXISTS, INCR, EXPIRE, TTL.
+end note
+
+note bottom of BenchmarkRunner
+Misura throughput, latenza e memoria
+su workload confrontabili.
+end note
+
+@enduml

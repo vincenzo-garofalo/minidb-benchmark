@@ -1,0 +1,64 @@
+@startuml
+title MiniDB Rust - Struttura Moduli, Struct ed Enum
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "main.rs" {
+  class main <<function>> {
+    + main()
+  }
+}
+
+package "command.rs" {
+  enum Command {
+    Ping
+    Set { key: String, value: String }
+    Get { key: String }
+    Del { key: String }
+    Exists { key: String }
+    Incr { key: String }
+    Expire { key: String, seconds: i64 }
+    Ttl { key: String }
+    + parse(input: &str): Result<Command, String>
+  }
+}
+
+package "db.rs" {
+  class MiniDb <<struct>> {
+    - data: HashMap<String, String>
+    - expires_at: HashMap<String, Instant>
+    + new(): MiniDb
+    + execute(command: Command): Response
+    - remove_if_expired(key: &str)
+  }
+
+  interface Default {
+    + default(): MiniDb
+  }
+}
+
+package "response.rs" {
+  enum Response {
+    Text(String)
+    NotFound
+    Integer(i64)
+    Error(String)
+    + to_text(): String
+  }
+}
+
+main ..> Command : parse input
+main --> MiniDb : crea e usa
+main ..> Response : stampa output
+MiniDb --> Command : match sui comandi
+MiniDb --> Response : restituisce
+MiniDb ..|> Default
+
+note bottom of MiniDb
+Lo stato e' basato su HashMap:
+data memorizza i valori,
+expires_at memorizza Instant di scadenza.
+end note
+
+@enduml

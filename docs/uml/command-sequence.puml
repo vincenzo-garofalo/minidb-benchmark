@@ -1,0 +1,48 @@
+@startuml
+title MiniDB - Sequenza di Esecuzione di un Comando
+
+skinparam shadowing false
+
+actor Utente
+participant "Main / main.py / main.rs" as Main
+participant "Command.parse" as Parser
+participant "MiniDb.execute" as Db
+participant "Response.toText / to_text" as Formatter
+
+Utente -> Main : inserisce riga comando
+Main -> Main : trim input
+
+alt input EXIT o QUIT
+  Main --> Utente : termina sessione
+else comando MiniDB
+  Main -> Parser : parse(input)
+
+  alt comando valido
+    Parser --> Main : Command
+    Main -> Db : execute(command)
+    Db -> Db : removeIfExpired(key)
+
+    alt comando di lettura
+      Db -> Db : legge data / _data / HashMap
+    else comando di scrittura
+      Db -> Db : aggiorna valore o scadenza
+    end
+
+    Db --> Main : Response
+  else comando non valido
+    Parser --> Main : errore validazione
+    Main -> Main : Response.error(message)
+  end
+
+  Main -> Formatter : toText() / to_text()
+  Formatter --> Main : testo risposta
+  Main --> Utente : stampa risposta
+end
+
+note right of Db
+La scadenza e' pigra:
+la chiave viene rimossa
+solo quando un comando la tocca.
+end note
+
+@enduml

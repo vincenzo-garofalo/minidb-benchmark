@@ -1,7 +1,6 @@
 # MiniDB Command Specification
 
-Questa specifica definisce il comportamento comune che dovrà essere rispettato
-dalle implementazioni in Rust, Python e Java.
+Questa specifica definisce il comportamento comune che dovrà essere rispettato dalle implementazioni in Rust, Python e Java.
 
 MiniDB è un database key-value in memoria.
 
@@ -22,8 +21,8 @@ value: string
 expires_at: optional timestamp
 ```
 
-Le chiavi sono univoche. Impostare una chiave già esistente sovrascrive il
-valore precedente e rimuove l'eventuale scadenza associata.
+Le chiavi sono univoche; impostare una chiave già esistente sovrascrive il valore precedente e rimuove l'eventuale scadenza associata.
+Inoltre, `GET`, `DEL`, `EXISTS`, `INCR`, `EXPIRE` e `TTL` devono controllare se la chiave è scaduta prima di rispondere; non esiste un thread che pulisce periodicamente le chiavi scadute: la rimozione è "pigra", cioè avviene quando una chiave viene toccata da un comando.
 
 ## Formato Dei Comandi
 
@@ -50,25 +49,15 @@ GET username
 
 ## Formato Delle Risposte
 
-Le risposte sono testuali.
-
-```text
-OK
-value
-NOT_FOUND
-1
-0
--1
--2
-ERR message
-```
-
-Significato:
+Le risposte sono testuali. Significato:
 
 - `OK`: comando eseguito correttamente senza valore da restituire.
+- `value`: valore associato alla chiave.
+- `PONG`: risposta a `PING`.
 - `NOT_FOUND`: chiave non trovata.
 - `1`: risultato positivo o vero.
 - `0`: risultato negativo o falso.
+- `seconds`: numero di secondi rimanenti prima della scadenza.
 - `-1`: chiave esistente senza scadenza (`TTL`).
 - `-2`: chiave non esistente (`TTL`).
 - `ERR message`: comando non valido o errore di tipo.
@@ -409,8 +398,7 @@ ERR wrong number of arguments for TTL
 
 ### Troppi o pochi argomenti
 
-Ogni comando deve ricevere esattamente il numero di argomenti indicato nella
-specifica.
+Ogni comando deve ricevere esattamente il numero di argomenti indicato nella specifica.
 
 ```text
 SET a b c
@@ -467,8 +455,7 @@ UNKNOWN x             -> ERR unknown command UNKNOWN
 
 ## Estensioni Future
 
-Queste funzionalità non fanno parte della prima versione, ma potranno essere
-aggiunte dopo che il core sarà stabile:
+Queste funzionalità non fanno parte della prima versione, ma potranno essere aggiunte dopo che il core sarà stabile:
 
 - server TCP;
 - protocollo RESP;

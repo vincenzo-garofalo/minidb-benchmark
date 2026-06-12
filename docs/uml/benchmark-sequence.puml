@@ -1,0 +1,58 @@
+@startuml
+title MiniDB Benchmark - Sequenza di Esecuzione
+
+skinparam shadowing false
+
+actor Operatore
+participant "BenchmarkRunner" as Runner
+participant "Options.parse" as Options
+participant "Workload directory" as WorkloadDir
+participant "Build Java" as BuildJava
+participant "Build Rust" as BuildRust
+participant "Implementazione MiniDB" as Impl
+database "benchmark/results" as Results
+
+Operatore -> Runner : avvia benchmark con opzioni CLI
+Runner -> Options : parse(args)
+Options --> Runner : runs, workload, mode
+
+Runner -> WorkloadDir : crea cartella workload
+Runner -> Results : crea cartella risultati
+
+alt generazione workload abilitata
+  Runner -> WorkloadDir : genera file mancanti o vuoti
+end
+
+Runner -> BuildJava : compila java-minidb
+BuildJava --> Runner : classi aggiornate
+Runner -> BuildRust : compila rust-minidb
+BuildRust --> Runner : binario aggiornato
+
+Runner -> WorkloadDir : carica workload selezionati
+WorkloadDir --> Runner : lista comandi
+
+loop per ogni workload, implementazione e run
+  Runner -> Impl : avvia processo
+  Runner -> Impl : invia comandi su stdin
+  Impl --> Runner : risposte su stdout
+
+  alt modalita throughput
+    Runner -> Runner : misura tempo e latenze
+  else modalita memory
+    Runner -> Runner : campiona RSS iniziale e picco
+  end
+
+  Runner -> Impl : termina processo
+end
+
+Runner -> Results : scrive risultati CSV
+Runner -> Results : scrive riepiloghi aggregati
+Runner --> Operatore : stampa sintesi
+
+note right of Runner
+Le implementazioni vengono confrontate
+usando gli stessi workload e lo stesso
+protocollo testuale.
+end note
+
+@enduml
