@@ -826,33 +826,31 @@ public final class BenchmarkRunner {
         System.out.println("Average throughput");
         System.out.printf(
                 Locale.ROOT,
-                "%-18s %-8s %-4s %-12s %-12s %-8s %-12s %-12s%n",
+                "%-18s %-8s %-4s %-12s %-12s %-8s %-12s%n",
                 "workload",
                 "language",
                 "runs",
                 "avg_cmd/s",
                 "std_cmd/s",
                 "cv_pct",
-                "ci95_low",
-                "ci95_high"
+                "ci95_margin"
         );
-        System.out.println("-".repeat(100));
+        System.out.println("-".repeat(85));
         String previousWorkload = null;
         for (AverageThroughputSummary average : averages) {
             if (previousWorkload != null && !previousWorkload.equals(average.workload())) {
-                System.out.println("-".repeat(100));
+                System.out.println("-".repeat(85));
             }
             System.out.printf(
                     Locale.ROOT,
-                    "%-18s %-8s %-4d %-12.0f %-12.0f %-8.2f %-12.0f %-12.0f%n",
+                    "%-18s %-8s %-4d %-12.0f %-12.0f %-8.2f %-12.0f%n",
                     average.workload(),
                     average.language(),
                     average.runs(),
                     average.commandsPerSecond(),
                     average.stdDevCommandsPerSecond(),
                     average.coefficientOfVariation() * 100.0,
-                    average.confidenceIntervalLowerCommandsPerSecond(),
-                    average.confidenceIntervalUpperCommandsPerSecond()
+                    average.confidenceIntervalMarginCommandsPerSecond()
             );
             previousWorkload = average.workload();
         }

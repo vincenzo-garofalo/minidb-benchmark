@@ -70,7 +70,7 @@ Quando una stessa coppia linguaggio/workload viene ripetuta più volte con
 - `avg_cmd/s`: throughput medio;
 - `std_cmd/s`: deviazione standard campionaria del throughput;
 - `cv_pct`: coefficiente di variazione, cioè `std_cmd/s / avg_cmd/s * 100`;
-- `ci95_low` e `ci95_high`: estremi dell'intervallo di confidenza al 95% del throughput medio.
+- `ci95_margin`: margine di errore dell'intervallo di confidenza al 95% del throughput medio.
 
 La deviazione standard campionaria misura quanto i throughput delle singole run
 si discostano dal throughput medio. Se una stessa configurazione produce
@@ -115,7 +115,13 @@ dove:
 - `std_cmd/s` è la deviazione standard campionaria;
 - `t` è il valore critico della distribuzione t di Student per `n - 1` gradi di libertà.
 
-Gli estremi salvati sono:
+La rappresentazione usata nelle tabelle del file `summary.md` è:
+
+```text
+IC 95% = avg_cmd/s ± margin
+```
+
+Gli estremi salvati nel CSV aggregato sono derivati dallo stesso margine:
 
 ```text
 ci95_lower = avg_cmd/s - margin
@@ -341,8 +347,11 @@ python,small_mixed,5,1000,0.2543,4128.77,614.22,14.8762,762.63,3366.14,4891.40,0
 ```
 
 Questo file è aggregato: ogni riga riassume tutte le run per una coppia
-linguaggio/workload; contiene medie, misure di variabilità e intervalli di
-confidenza già pronti.
+linguaggio/workload; contiene medie, misure di variabilità e il margine
+dell'intervallo di confidenza. I campi `ci95_lower_commands_per_second` e
+`ci95_upper_commands_per_second` sono mantenuti come valori numerici derivati,
+ma nelle tabelle leggibili l'intervallo viene presentato come
+`avg_commands_per_second ± ci95_margin_commands_per_second`.
 
 ### Formato Di `memory_results.csv`
 
